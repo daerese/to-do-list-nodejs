@@ -5,8 +5,32 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <h1>Index Page</h1>
+    <h1>Hello,</h1>
+
+    <p>{{user}}</p>
+
+    <form action="/testUser" method="POST">
+        <button type="submit">Is Someone There?</button>
+    </form>
+
+    <form action="/logout" method="POST">
+        <button type="submit">Logout</button>
+    </form>
+
+    <form action="/taskList/create" method="POST">
+
+        <h2>Create a Task List!</h2>
+        <input type="text" name="taskListName" id="taskList" />
+        <button type="submit">Add Task List</button>
+    </form>
+
+<script>
+
+</script>
+
 </body>
 </html>

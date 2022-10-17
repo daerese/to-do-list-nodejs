@@ -14,7 +14,7 @@
         <a href="/">Login</a>
     </div>
 
-    <form action="" method="POST">
+    <form action="api/v1/signup" method="POST">
 
         <div>
             <label for="name">Name</label>
@@ -31,7 +31,16 @@
             <input type="password" name="password" id="password" required />
         </div>
 
+        <div>
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" />
+        </div>
+
         <button type="submit">Sign up</button>
+    </form>
+
+    <form action="/testUser" method="POST">
+        <button type="submit">Is Someone There?</button>
     </form>
 
 </body>
