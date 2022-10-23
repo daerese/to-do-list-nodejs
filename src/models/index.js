@@ -4,6 +4,7 @@
 
 // Deferrable is something that will help us with creating Foreign Keys. 
 const {Sequelize, DataTypes, Deferrable} = require('sequelize');
+const { get } = require('../routes');
 
 const sqlize = new Sequelize({
     host: 'localhost',
@@ -26,7 +27,11 @@ module.exports = () => {
                 // autoIncrement: true // TODO: Generate a more secure user id?
             },
             name: {
-                type: DataTypes.STRING
+                type: DataTypes.STRING,
+
+                // get() {
+                //     const rawValue = this.getD
+                // }
             },
             email: {
                 type: DataTypes.STRING

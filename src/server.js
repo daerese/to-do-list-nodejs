@@ -9,7 +9,7 @@
 //TODO: Route to the correct pages
 //TODO: Create protected routes
 
-TODO: Create task models
+//TODO: Create task models
 TODO: Create test todo list page
 TODO: Add post rotues for writing/editing tasks
 
@@ -24,6 +24,12 @@ const path = require('path')
 const session = require('express-session')
 const dotenv = require('dotenv').config()
 
+const livereload = require('livereload')
+const connectLivereload = require('connect-livereload')
+
+// To help us use hbs
+const hbs = require('hbs')
+
 const app = express()
 
 // Setup passport 
@@ -32,6 +38,14 @@ const passport = require('passport')
 const {
     PORT = 3000,
 } = process.env
+
+// Serving our static files within the public folder
+const parentDir = path.resolve(path.dirname(__filename), '..')
+const publicPath = path.join(parentDir, 'public')
+
+// * to Dynacmically update content in our page
+// const liveReloadServer = livereload.createServer().watch(publicPath)
+
 
 /* ****************
  * Redis Configuration
@@ -54,14 +68,10 @@ redisClient.connect().catch(console.error);
 app.use(express.json()) 
 app.use(express.urlencoded({extended: true}))
 
+app.use(express.static(publicPath))
+
 // Views setup
 app.set('view engine', 'hbs')
-
-// Serving our static files within the public folder
-const parentDir = path.resolve(path.dirname(__filename), '..')
-const publicPath = path.join(parentDir, 'public')
-
-app.use(express.static(publicPath))
 
 // Setup the session middleware
 app.use(session({
@@ -87,6 +97,13 @@ app.use(passport.session());
 // Tell the app to use the router
 const router = require('./routes');
 
+// // * Middleware Helper Function
+/* // app.use((req, res, next) => {
+//     res.locals.req = req;
+//     console.log(req)
+//     next()
+// }) */
+
 app.use(router)
 
 // Configure the passport strategies 
@@ -105,6 +122,22 @@ passportConfig()
 //         console.error('Unable to connect to the database:', error);
 //       }
 // }
+
+/* ****************** 
+* HBS Configuration
+*********************/
+const partialsPath = path.join(parentDir, 'views/partials')
+hbs.registerPartials(partialsPath)
+
+// Expose our app to hbs so we can access locals
+hbs.localsAsTemplateData(app)
+
+
+// * Helpers *//
+hbs.registerHelper('username', () => {
+})
+
+
 
 /***************************************** */
 

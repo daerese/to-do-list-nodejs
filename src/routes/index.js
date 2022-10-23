@@ -11,12 +11,18 @@ const router = express.Router();
 
 const { Task_List } = require('../models')()
 
+const hbs = require('hbs');
+
+// const Pjax = require('pjax')
+
 // Importing the controller functions which will render each page. 
 const { 
     homePage,
     loginPage,
     registerPage,
-    logout
+    logout,
+    taskListPage,
+    profilePage
 } = require('../controllers')
 
 /* ********************
@@ -27,6 +33,10 @@ const {
 router.route('/').get(redirectHome, loginPage)
 router.route('/register').get(redirectHome, registerPage)
 router.route('/home').get(redirectLogin, homePage)
+
+router.route('/profile').get(redirectLogin, profilePage)
+
+router.route('/task-lists/:id').get(redirectLogin, taskListPage)
 
 // POST routes
 router.route('/api/v1/signin').post(
@@ -114,37 +124,57 @@ router.route('/testUser').post( (req, res) => {
     // console.log(req)
 
     console.log(req.session.passport)
+    console.log(req.session)
+    console.log('cookie: ', req.session.cookie)
 
 })
 
-
 /* ********************
  * TO DO LIST ROUTES
- *********************/
+ *********************/ 
 
-router.route('/taskList/create').post(async (req, res) => {
+router.route('/add/task-list').post(async (req, res) => {
 
     try {
         // Create the table
-    await Task_List.sync({force: true})
+    await Task_List.sync({})
 
     // Get the user inputted info
-    const { taskListName } = req.body
+    const { list_name } = req.body
+
+    console.log('The post request, hopefully:', req.body)
 
     
     // * Acquring the user id from the current session, which is stored within passport
     const { user } = req.session.passport
     
-
     // create a new task list. 
-    const taskList = await Task_List.create({
-        list_name: taskListName,
+    const taskList = (await Task_List.create({
+        list_name: list_name,
         user_id: user
-    })
+    }))
 
-    if (taskList) {
-        console.log('Task List Created')
+    const newTaskList = {list_name: taskList.get('list_name', {plain: true}),
+                         list_id: taskList.get('list_id', {plain: true})}
+
+
+    console.log('TASK LIST: ', newTaskList)
+
+    // Create the array of task lists, or append if it already exists. 
+    if (!res.locals.taskLists) {
+        res.locals.taskLists = [newTaskList]//[newTaskList.get({plain: true})]
+    } else {
+        res.locals.taskLists.push(newTaskList)
     }
+
+    // TODO: Register a helper for whichPartial --> Dynamically render partial?
+
+    // // Send a json response contain task list information.
+    // res.json([{
+    //     task_list_name: newTaskList
+    // }])
+
+    res.json(newTaskList)
 
     // console.log(taskListName)
     }
@@ -154,5 +184,14 @@ router.route('/taskList/create').post(async (req, res) => {
         }
     }
 })
+
+
+// TODO: Create a dynamic route to display the task lists and its tasks
+// router.route('/home/task-lists/:list_id').get(redirectLogin, taskListPage)
+
+//Other routes here
+router.route('*').get(function(req, res){
+    res.send('Sorry, this is wrong URL.');
+});
 
 module.exports = router

@@ -6,31 +6,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
+
+
+    {{!-- Ajax --}}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    {{!-- Pjax --}}
+    {{!-- <script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script> --}}
+    {{!-- <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script> --}}
+
+    {{!-- Handlebars CDN --}}
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+
 </head>
 <body>
-    <h1>Hello,</h1>
 
-    <p>{{user}}</p>
 
-    <form action="/testUser" method="POST">
-        <button type="submit">Is Someone There?</button>
-    </form>
+    {{#*inline 'task-list'}}
+        <div class="wrapper-task-list" id="wrapper-task-list">
+            {{!-- {{!-- <h2><a href="/home/task-lists/{{this.list_id}}">{{this.list_name}}{{!--</a></h2> --}}
+            <h2><a href="/task-lists/{{this.list_id}}">{{this.list_name}}</a></h2>
+        </div>
+    {{/inline}}
 
-    <form action="/logout" method="POST">
-        <button type="submit">Logout</button>
-    </form>
+    {{!-- * Utilizing a Partial we registered --}}
+    {{> header}}
 
-    <form action="/taskList/create" method="POST">
 
-        <h2>Create a Task List!</h2>
-        <input type="text" name="taskListName" id="taskList" />
-        <button type="submit">Add Task List</button>
-    </form>
+    <div class="wrapper-main">
+
+        <h1>Hello,</h1>
+
+        <p>Username:</p>
+
+        <form action="/testUser" method="POST">
+            <button type="submit">Is Someone There?</button>
+        </form>
+
+        <form action="/logout" method="POST">
+            <button type="submit">Logout</button>
+        </form>
+
+        <form id="new-task-list">
+
+            <h2>Create a Task List!</h2>
+            <input type="text" name="taskListName" id="taskListName" required />
+            <button type="submit">Add Task List</button>
+        </form>
+
+
+        <div id="taskCreated">
+
+        </div>
+
+
+        {{!-- * Display a task list if it exists. --}}
+
+        <div id="task-lists-container">
+            {{#if taskLists}}
+
+                {{#each taskLists}}
+                    {{> task-list}}
+                {{/each}}
+
+            {{/if}}
+        </div>
+
+    </div>
+
+    {{!-- <script src="../js/script"></script> --}}
+
+
 
 <script>
 
+$(document).ready( () => {
+    $('#new-task-list').on('submit', () => {
+        event.preventDefault();
+        // Acquire the data
+        const data = {list_name: $('#taskListName').val()}
+        console.log('THE DATA', data)
+
+       // Make the ajax request
+
+       if (data.list_name) {
+        $.ajax({
+            url: 'http://localhost:3000/add/task-list',
+            data: data,
+            method: 'POST',
+        }).then( (res) => {
+            console.log('POST REQUEST SUCCESSFUL:', res)
+
+            // *append res content to the page.
+            $('#task-lists-container').append(`
+                <div class="wrapper-task-list" id="wrapper-task-list">
+                    <h2><a href="/task-lists/${res.list_id}">${res.list_name}</a></h2>
+                </div>
+           `)
+
+        }).catch((err) => {
+            console.log(err)
+        })
+       }
+    })
+})
+
+function listSuccess() {
+
+    $('#taskCreated').append(`
+        <p>Task Successfully Created!</p>
+    `)
+}
+
 </script>
 
+
 </body>
+
+
 </html>

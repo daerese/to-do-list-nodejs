@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+
+    {{!-- Ajax --}}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    {{!-- Pjax --}}
+    {{!-- <script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script> --}}
+    {{!-- <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script> --}}
+
+    {{!-- Handlebars CDN --}}
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+</head>
+<body>
+
+
+    {{#*inline 'task-list'}}
+        <div class="wrapper-task-list" id="wrapper-task-list">
+            <p class="task-list"><a href="/task-lists/{{this.list_id}}">{{this.list_name}}</a></h2>
+        </div>
+    {{/inline}}
+
+    {{!-- * Utilizing a Partial we registered --}}
+    {{> header}}
+
+    <div class="wrapper-main">
+
+        <div class="container-sidenav">
+            {{!-- * Display a task list if it exists. --}}
+            <div id="task-lists-container">
+                <p class="bold">Lists</p>
+                <hr>
+
+                {{#if taskLists}}
+
+                    {{#each taskLists}}
+                        {{> task-list}}
+                    {{/each}}
+
+                {{/if}}
+            </div>
+        </div>
+
+
+        <div class="container-main">
+
+            {{!-- Insert name of list here --}}
+            <h1>List name: </h1>
+            <h1>Hello,</h1>
+
+            <p>Username: TASK LIST PAGE</p>
+
+            <form action="/testUser" method="POST">
+                <button type="submit">Is Someone There?</button>
+            </form>
+
+            <form action="/logout" method="POST">
+                <button type="submit">Logout</button>
+            </form>
+
+            <form id="new-task-list">
+
+                <h2>Create a Task List!</h2>
+                <input type="text" name="taskListName" id="taskListName" required />
+                <button type="submit">Add Task List</button>
+            </form>
+
+
+            <div id="taskCreated">
+
+            </div>
+        </div>
+
+    </div>
+
+    
+
+
+    {{!-- <script src="../js/script"></script> --}}
+
+
+</body>
+</html>

@@ -65,7 +65,7 @@ module.exports.passportConfig =  async () => {
 
                 console.log('ATTEMPTING REGISTRATION...')
                 // Here, take the regular steps to verifying a user's information
-                await User.sync({force: true});
+                await User.sync({});
 
                 // Get the name and confirmPassword from the form
                 const { name } = req.body
