@@ -1,5 +1,7 @@
 /*
 * This is where we define the data models for the database. 
+
+todo: Generate an index on the foreign keys.
 */
 
 // Deferrable is something that will help us with creating Foreign Keys. 
@@ -29,9 +31,9 @@ module.exports = () => {
             name: {
                 type: DataTypes.STRING,
 
-                // get() {
-                //     const rawValue = this.getD
-                // }
+                get() {
+                    return this.getDataValue('name')
+                }
             },
             email: {
                 type: DataTypes.STRING
@@ -73,11 +75,7 @@ module.exports = () => {
                 required: true,
                 allowNull: false,
             },
-            task_description: {
-                type: DataTypes.STRING,
-                allowNull: true,
-            },
-            proirity_score: {
+            priority_score: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0
             },
@@ -94,12 +92,24 @@ module.exports = () => {
             }, 
             list_id: {
                 type: DataTypes.INTEGER,
-
                 references: {
                     model: 'task_lists',
                     key: 'list_id'
                 }
+            },
+            user_id: {
+                type: DataTypes.UUID,
+                allowNull: false,
+                required: true,
+                // * To help us create a foriegn key 
+                references: {
+                    // This referneces another model
+                    model: 'users',
+                    key: 'id',
+                    // deferrable: Deferrable.INITIALLY_IMMEDIATE
+                }
             }
+            
         })
 
         // * Subtasks

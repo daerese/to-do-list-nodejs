@@ -81,6 +81,7 @@ app.use(session({
         secure: false, //False for now while in development
         httpOnly: false, // if true prevent client side JS from reading the cookie
         //set maxAge later
+        maxAge: 60000 * 60
     }, 
     resave: false, // force session to be saved back to session store, even if it wasn't modified during request.
     secret: 'keyboard cat', // TODO: more secure secret
@@ -132,6 +133,8 @@ hbs.registerPartials(partialsPath)
 // Expose our app to hbs so we can access locals
 hbs.localsAsTemplateData(app)
 
+
+// TODO: Add the partials to app.locals?? Access the partial in a route, send it through res.locals? Render?
 
 // * Helpers *//
 hbs.registerHelper('username', () => {

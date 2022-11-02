@@ -8,6 +8,10 @@
 
     <link rel="stylesheet" href="/css/style.css">
 
+    {{!-- Fonts --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Poppins:wght@100;300;400;600&display=swap" rel="stylesheet">
 
     {{!-- Ajax --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -17,6 +21,9 @@
 
     {{!-- Handlebars CDN --}}
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+
+    {{!-- Fontawesome CDN --}}
+    <script src="https://kit.fontawesome.com/a4e8b7b3a4.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -27,6 +34,10 @@
         </div>
     {{/inline}}
 
+    {{#*inline 'task'}}
+
+    {{/inline}}
+
     {{!-- * Utilizing a Partial we registered --}}
     {{> header}}
 
@@ -35,43 +46,144 @@
         <div class="container-sidenav">
             {{!-- * Display a task list if it exists. --}}
             <div id="task-lists-container">
-                <p class="bold">Lists</p>
-                <hr>
+                
+                <div class="task-lists-container-header">
+                    <p class="bold">Lists</p>
+                    <hr>
+                </div>
 
-                {{#if taskLists}}
+                <div class="task-lists-container-body">
+                    {{#if taskLists}}
 
-                    {{#each taskLists}}
-                        {{> task-list}}
-                    {{/each}}
+                        {{#each taskLists}}
+                            {{> task-list}}
+                        {{/each}}
 
-                {{/if}}
+                    {{/if}}
+                </div>
+
+
             </div>
         </div>
 
-
         <div class="container-main">
 
-            {{!-- Insert name of list here --}}
-            <h1>List name: </h1>
-            <h1>Hello,</h1>
 
-            <p>Username: TASK LIST PAGE</p>
+            <div class="container-main-top">
 
-            <form action="/testUser" method="POST">
+                {{!-- * The top contians the title, and task input with a fixed position --}}
+
+                {{!-- Insert name of list here --}}
+                <h1>{{currentList.list_name}}</h1>
+                {{!-- <h1>Hello</h1> --}}
+                
+                <div class="add-task-container">
+
+                    {{!-- TODO: Add a pointer-up circle button, inside of the textnbox on left. --}}
+                    {{!-- TODO: Make that button inactive and grey when no text is there. --}}
+
+                    <form id="new-task" class="form-add-task">
+                        <input class="task-input" id="task-input-name" name="task-title" type="text" />
+                        <button class="btn btn-primary" type="submit">Add Task</button>
+                    </form>
+
+
+                </div>
+            </div>
+
+            <div class="container-main-body">
+                {{!-- * The body contains all the tasks created by the user. --}}
+                {{!-- TODO: give the tasks in this container an overflow-y, Make the top sticky/fixed --}}
+
+
+                {{!-- TODO: Flexbox? --}}
+
+                {{#if currentTasks}}
+
+                    {{#each currentTasks}}
+
+                        <div class="task-container" data-id="{{this.task_id}}">
+
+                            <div class="task-container-left">
+
+                                <div class="priority-container">
+
+                                    {{!-- TODO: If there is no score (=0), don't show it. (opacity 0?) --}}
+
+                                    <span id="priority">{{this.priority_score}}</span> 
+                                    {{!-- * Insert a star --}}
+                                </div>
+
+                            </div>
+
+                            {{!-- TODO: Complete button inside of here --}}
+                            <div class="task-container-center">
+                                {{!-- TODO: Find a way to complete the task, and delete from the DB --}}
+                                
+                                <div class="task-main">
+
+
+                                    {{!-- * Inline button here --}}
+
+                                    <form class="complete-task">
+                                        <button class="btn btn-icon btn-icon-light btn-complete-task" type="submit">
+                                            <i class="fa-regular fa-circle-check"></i>
+                                        </button>
+                                    </form>
+                                    <p class="task-title">{{this.task_title}}</p>
+
+                                </div>
+
+                                {{!-- * Display this container only if the added subtasks --}}
+                                <div class="subtasks-container">
+                                    {{!-- <hr> --}}
+
+                                    {{!-- TODO: Toggle the subtasks (up and down) --}}
+                                    <p class="sub-header text-small"></p>
+
+                                    <div class="subtasks">
+                                        
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="task-container-right">
+
+                                <div class="options-container">
+                                    <button class="btn btn-icon btn-icon-opaque">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                </div>
+                            
+                            </div>
+
+                        </div>
+
+                    {{/each}}
+
+                {{/if}}
+
+            </div>
+
+
+
+
+
+
+
+
+
+            {{!-- <form action="/testUser" method="POST">
                 <button type="submit">Is Someone There?</button>
             </form>
 
             <form action="/logout" method="POST">
                 <button type="submit">Logout</button>
-            </form>
+            </form> --}}
 
-            <form id="new-task-list">
-
-                <h2>Create a Task List!</h2>
-                <input type="text" name="taskListName" id="taskListName" required />
-                <button type="submit">Add Task List</button>
-            </form>
-
+            
 
             <div id="taskCreated">
 
@@ -85,6 +197,130 @@
 
     {{!-- <script src="../js/script"></script> --}}
 
+<script>
+
+
+$(document).ready( () => {
+    //$('.wrapper-main').css('margin-top', `${$('.wrapper-nav').css('height')}`)
+})
+
+// We will add a new task through ajax. 
+
+// Wait for the doc to be fully loaded before executing
+$(document).ready( () => {
+    $('#new-task').on('submit', (event) => {
+
+        // Override the default behavior of the submit event
+        event.preventDefault();
+
+        // Acquire the new task name 
+        const data =  {task_name: $('#task-input-name').val(),}        
+        console.log('The inputted task name', data)
+
+        $.ajax({
+            url: 'http://localhost:3000/add/task',
+            data: data,
+            method: 'POST',
+        }).then( (res) => {
+            console.log('Post request successful: ', res)
+            // TODO: Append a new task container.
+            // Clear the input.
+            $('.task-input').val('')
+
+            const newTask = `<div class="task-container" data-id="${res.task_id}">
+
+                            <div class="task-container-left">
+
+                                <div class="priority-container">
+
+                                    {{!-- TODO: If there is no score (=0), don't show it. (opacity 0?) --}}
+
+                                    <span id="priority">${res.priority_score}</span> 
+                                    {{!-- * Insert a star --}}
+                                </div>
+
+                            </div>
+
+                            {{!-- TODO: Complete button inside of here --}}
+                            <div class="task-container-center">
+                                {{!-- TODO: Find a way to complete the task, and delete from the DB --}}
+                                
+                                <div class="task-main">
+
+
+                                    {{!-- * Inline button here --}}
+                                    <button class="btn btn-icon btn-icon-light btn-complete-task"><i class="fa-regular fa-circle-check"></i></button>
+                                    <p class="task-title">${res.task_title}</p>
+
+                                </div>
+
+                                {{!-- * Display this container only if the added subtasks --}}
+                                <div class="subtasks-container">
+                                    {{!-- <hr> --}}
+
+                                    {{!-- TODO: Toggle the subtasks (up and down) --}}
+                                    <p class="sub-header text-small"></p>
+
+                                    <div class="subtasks">
+                                        
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="task-container-right">
+
+                                <div class="options-container">
+                                    <button class="btn btn-icon btn-icon-opaque">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                </div>
+                            
+                            </div>
+
+                        </div>`
+
+            $('.container-main-body').append(newTask)
+
+
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    })
+
+
+})
+// DELETE Request for removing tasks from the screen.
+$('.complete-task').on('submit', function (event) {
+    // Override the default.
+    event.preventDefault()
+
+    // This is how we can directly access the id of a task. Which we can then pass in our request.
+    const selectedTaskElement = event.currentTarget.closest('.task-container')
+
+    $.ajax( {
+        url: 'http://localhost:3000/delete/task',
+        data: {task_id: selectedTaskElement.getAttribute('data-id')}, // Sending the id number as our request.
+        method: 'DELETE'
+    }).then( (res) => {
+        
+        if (res.success) {
+            // Remove the selected element from DOM if request was successful.
+            selectedTaskElement.remove()
+
+            console.log('Task successfully deleted?')
+        }
+    }).catch((err) => {
+        console.log(err)
+    }) 
+})
+
+
+// Add a delete request to your complete button.
+
+</script>
 
 </body>
 </html>
