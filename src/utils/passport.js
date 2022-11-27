@@ -11,7 +11,9 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const validator = require('email-validator');
 
-const { User } = require('../models')() // () means the function will get called to return the User model. 
+const { User,
+        Task_List,
+        Task } = require('../models')() // () means the function will get called to return the User model. 
 
 /***************
  * PASSPORT STRATEGIES FOR LOGIN/REGISTER
@@ -28,6 +30,7 @@ module.exports.passportConfig =  async () => {
         async (email, password, done) => {
 
             try {
+                console.log('PASSPORT LOGIN STRATEGY...')
 
                 // TODO: Display a different message if the user trying to log in doesn't exist. 
 
@@ -66,6 +69,8 @@ module.exports.passportConfig =  async () => {
                 console.log('ATTEMPTING REGISTRATION...')
                 // Here, take the regular steps to verifying a user's information
                 await User.sync({});
+                await Task_List.sync({});
+                await Task.sync({});
 
                 // Get the name and confirmPassword from the form
                 const { name } = req.body
@@ -73,16 +78,16 @@ module.exports.passportConfig =  async () => {
 
                 let message = 'NO MESSAGE'
 
-                // Does the user already exist
+                // * Does the user already exist
                 if ( await User.findOne( {where: {email: email}}) ) { 
                     message = 'This email address is taken'
                     console.log('USER EXISTS?')
                 }
-                // Valid email address? 
+                // * Valid email address? 
                 else if ( !validator.validate(email) ) { 
                     message = 'Enter a valid email address'
                 }
-                // Password validity check
+                // * Password validity check
                 else { 
                     console.log('1. USER NOT FOUND, EMAIL VALID')
                     if ((password.trim()).length >= 8) {
@@ -103,16 +108,27 @@ module.exports.passportConfig =  async () => {
                                 const hash = await bcrypt.hash(password, salt)
                                 
                                 // TODO: Create a unique user id for each user
-                                const user = await User.create(
+                                const user = (await User.create(
                                     {
                                         name: name,
                                         email: email,
                                         password: hash
                                     }
-                                )
+                                )).get({plain: true})
+
+
                                 // return done(null, user)
                                 if (user) {
                                     console.log('User successfully created')
+
+                                    // * If the user was successfully created, give them a default home task list.
+                                    const home = await Task_List.create({ 
+                                        list_name: 'home',
+                                        default_list: true,
+                                        user_id: user.id,
+                                    })
+
+                                    console.log('\nUSER REGISTERED, HOME LIST CREATED', home)
 
                                     return done(null, user)
                                 } else {

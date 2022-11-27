@@ -1,8 +1,58 @@
-<!DOCTYPE html>
-<html>
-    <body>
-        
-        
+<div class="task-container" data-id="{{this.task_id}}">
 
-    </body>
-</html>
+    <div class="task-container-left">
+
+        <div class="priority-container">
+
+            {{!-- TODO: If there is no score (=0), don't show it. (opacity 0?) --}}
+
+            <span id="priority">{{this.priority_score}}</span> 
+            {{!-- * Insert a star --}}
+        </div>
+
+    </div>
+
+    {{!-- TODO: Complete button inside of here --}}
+    <div class="task-container-center">
+        {{!-- TODO: Find a way to complete the task, and delete from the DB --}}
+        
+        <div class="task-main">
+
+
+            {{!-- * Inline button here --}}
+
+            <form class="complete-task">
+                <button class="btn btn-icon btn-icon-light btn-complete-task" type="submit">
+                    <i class="fa-regular fa-circle-check"></i>
+                </button>
+            </form>
+            <p class="task-title">{{this.task_title}}</p>
+
+        </div>
+
+        {{!-- * Display this container only if the added subtasks --}}
+        <div class="subtasks-container">
+            {{!-- <hr> --}}
+
+            {{!-- TODO: Toggle the subtasks (up and down) --}}
+            <p class="sub-header text-small"></p>
+
+            <div class="subtasks">
+                
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="task-container-right">
+
+        <div class="options-container">
+            <button class="btn btn-icon btn-icon-opaque">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+        </div>
+    
+    </div>
+
+</div>

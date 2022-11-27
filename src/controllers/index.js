@@ -14,6 +14,10 @@
 * - These are stored in res.locals. (Variables stored here only last within each req, res cycle.):
 *   - app.locals.currentList --> The specific task list being accessed by the user.
 *   - app.locals.currentTasks --> The tasks associated with the current Task List.
+
+
+
+* onSubmit="console.log('New Task called'); return false; // Returning false stops the page from reloading"
 */
 
 const { get } = require('../routes');
@@ -33,7 +37,7 @@ const { Task_List,
 ********************** */
 
 const getUser = (req, res, returnFullUser=false) => {
-    console.log('User?: ', req.session.passport.user)
+    // console.log('User?: ', req.session.passport.user)
 
     if (returnFullUser) {
         return req.user;
@@ -42,19 +46,59 @@ const getUser = (req, res, returnFullUser=false) => {
     return req.session.passport.user
 }
 
-const getTaskList = (listId, taskLists) => {
+const getTaskList = (listId=null, taskLists) => {
 
     /**
-     * * Get a specific task list from the current user
+     * * Get a specific task list from the current user THis will be used the 
+     * * Task list page the user selects.
+     * 
+     * * if listId == null, we'll render the home page list.
      */
 
     try {
-        for (let list of taskLists) {
-            // console.log('THE LIST ID:', list.list_id)
-            if (list.list_id == listId) {
-                // console.log('\nFOUND THE LIST\n: ', list)
+
+
+        if (listId) {
+            // * Reset the current state of the taskLists
+            taskLists.forEach((list) => {
+                // console.log('For Each Task List: ', list)
+                if (list.current == true) {
+                    list.current = false;
+                }
+            })
+    
+            for (let list of taskLists) {
+                
+                // * If one of the lists is set to current: true, set it to false.
+                // if (list.current == true) {
+                //     list.current = false
+                // }
+                // * Return the preferred list, and set its current state to true.
+                if (list.list_id == listId) {
+                    list.current = true
+                    return list
+                }
+            }
+
+            console.log('GETTASKLIST HASNT FOUND A LIST')
+
+        } else {
+            // * If no list id was provided, render the home page.
+            // console.log('NULL SPECIFIED, returning home list')
+
+            for (let list of taskLists) {
+
+                // * This loop should find the home list, set its current to true, and then return it.
+
+                if (list.default_list == true) {
+                    list.current = true;
+                }
+
                 return list
             }
+
+            // const home = taskLists.find(list => list.default_list == true);
+            // return home
         }
     } catch(e) {
         console.log(e)
@@ -84,16 +128,49 @@ const renderTaskLists = async (req, res, returnLists=false) => {
 
     const taskLists = await Task_List.findAll({
         where: {user_id: user},
-        attributes: ['list_name', 'list_id'],
+        attributes: ['list_name', 'list_id', 'default_list'],
         raw: true
     })
+
+    // * If the user has NO LISTS AT ALL, they are new. Every new user should have 
+    // * A home list created. ALL users at least have 1 list --> home. 
+
+    // if (taskLists.length === 0) {
+    //     // * Create a home list.
+    //     const home = (await Task_List.create({ 
+    //         list_name: 'home',
+    //         default_list: true,
+    //         user_id: user,
+    //     })).get({plain: true})
+
+    //     home.current = true
+        
+    //     console.log('\nNew task List created??', home)
+    // }
+    // else {
+    //     console.log('\n LISTS HAVE BEEN FOUND', taskLists)   
+    // }
 
     // console.log('Successful: ', taskLists)
 
     if (taskLists) { 
+
+        // * Add the 'current' property to all task lists, even if it's just one list.
+
+        if (taskLists.length > 1) {
+            for (let list of taskLists) {
+                list.current = false;
+            }
+        } else {
+            taskLists[0].current = false
+        }
+
+        // * Add the user's task list(s) to app.locals
         req.app.locals.taskLists = taskLists
         // res.locals.taskLists = taskLists
+    
     } else {
+        // Todo: throw an error instead
         req.app.locals.taskLists = null
     }
 
@@ -131,7 +208,7 @@ const renderTasks = async (req, res, listId=null, returnTasks=false) => {
         } else {
             // If the user doesn't have tasks created already.
             req.app.locals.allTasks = null
-            console.log('NO TASKS FOR THIS USER')
+            // console.log('NO TASKS FOR THIS USER')
         }
 
         // ? Maybe delete this functionality. It's not needed
@@ -159,7 +236,7 @@ exports.registerPage = (req, res) => {
 exports.homePage = async (req, res) => {
 
     if (req.isAuthenticated()) {
-        console.log('WELCOME TO THE HOME PAGE, THE USER IS AUTHENTICATED')
+        // console.log('WELCOME TO THE HOME PAGE, THE USER IS AUTHENTICATED')
 
         // * If they're authed, we should have access to their id.
         try {
@@ -167,12 +244,23 @@ exports.homePage = async (req, res) => {
             const { user } = req.session.passport
 
             
-            if (!req.app.locals.taskLists) {
+            // if (!req.app.locals.taskLists) {   
                 
-                await renderTaskLists(req, res)
-            }
-            if (!req.app.locals.allTasks) {
+            const taskLists = await renderTaskLists(req, res, true)
+                        
+            const home = getTaskList(null, taskLists)
 
+            const currentTasks = getTasks(home.list_id, req.app.locals.allTasks)
+
+            // * Pass home list in to the current list
+            // * Pass current tasks into to locals.current tasks (if exists)
+
+            req.app.locals.currentList = home
+            req.app.locals.currentTasks = currentTasks
+
+
+            // }
+            if (!req.app.locals.allTasks) {
                 await renderTasks(req, res)
             }
             res.render('home', {
@@ -181,6 +269,8 @@ exports.homePage = async (req, res) => {
             })
 
         }
+
+
         catch(err) {
             console.log(err)
         }
@@ -206,7 +296,7 @@ exports.taskListPage = async (req, res) => {
     if (!req.app.locals.taskLists) {      
         await renderTaskLists(req, res)
     } 
-    else {
+    //else {
         // TODO: Acquire the specific task list of this page.
         const currentList = getTaskList(listId, req.app.locals.taskLists)
         
@@ -214,7 +304,7 @@ exports.taskListPage = async (req, res) => {
         if (!req.app.locals.allTasks) {
             await renderTasks(req, res)
         } else {
-            console.log('APP.LOCALS.ALLTASKS TASKS IS NOT UNDEFINED')
+            // console.log('APP.LOCALS.ALLTASKS TASKS IS NOT UNDEFINED')
         }
 
         // * Filter for tasks with the current list id.
@@ -224,15 +314,15 @@ exports.taskListPage = async (req, res) => {
         req.app.locals.currentTasks = currentTasks
         // res.locals.username = await user.name
         
-    }
+    //}
     
     res.render('task-list')
     
-    if (req.app.locals.allTasks) {
-        console.log('STILL DEFINED AFTER RENDERING.')
-    } else {
-        console.log('\nAFTER RENDERING, ITS UNDEFINED\n')
-    }
+    // if (req.app.locals.allTasks) {
+    //     console.log('STILL DEFINED AFTER RENDERING.')
+    // } else {
+    //     console.log('\nAFTER RENDERING, ITS UNDEFINED\n')
+    // }
     console.log('\nTHE CURRENT LIST: ', req.app.locals.currentList)
 }
 

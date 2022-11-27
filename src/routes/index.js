@@ -27,68 +27,120 @@ const {
 } = require('../controllers')
 
 /* ********************
+ * UTILITY FUNCTIONS 
+ *********************/ 
+
+
+
+async function handlePassportDone(err, user, info, req, res, next) {
+
+    // * Error redirect
+    if (err) {return next(err)}
+    
+    // * If there's no error, but no user, then the user is unauthenticated.
+    // * They entered invalid credentials. This has to be shown on the front end
+    if (!user) {
+        console.log(req)
+        return res.redirect('/')
+    }
+
+    // * Custom success redirect
+
+    // * Find the * home task list (its a default list) get its id
+    const home = await Task_List.findOne({
+        where: {
+            user_id: user.id,
+            default_list: true
+        }
+    })
+
+    // * Passport.authenticate calls req.login automatically. But, since we're using a
+    // * custom callback function which OVERRIDES passport.authenticate(), we have to call it ourselves.
+    req.login(user, function(err) {
+        if (err) { return next(err); }
+        return res.redirect(`/task-lists/${home.list_id}`);
+    });
+
+}
+
+
+
+/* ********************
  * GET and POST routes  
  *********************/
 
 // Our main/index page will be the login page
 router.route('/').get(redirectHome, loginPage)
 router.route('/register').get(redirectHome, registerPage)
-router.route('/home').get(redirectLogin, homePage)
+// router.route('/home').get(redirectLogin, homePage)
 
 router.route('/profile').get(redirectLogin, profilePage)
 
 router.route('/task-lists/:id').get(redirectLogin, taskListPage)
 
 // POST routes
-router.route('/api/v1/signin').post(
-    // Authetnicate using the passport login strategy
-    passport.authenticate('local-login', {
-        failureRedirect: '/',
-        successRedirect: '/home',
-        failureMessage: true
-    }, //(err, user, info) => { // This is a callback which accesses the verify (done) function in the passport strategy.
-    //         if (err) {
-    //             console.log(err)
-    //         }   
-    //         // TODO: Figure out a way to display the failure message
-
-    //         // Custom Failure Redirect
-    //         // else if (info) {
-    //         //     module.exports.failureMessage = info.message
-    //         //     return res.redirect('/')
-    //         // }
-    // })
-))
+router.route('/api/v1/signin').post( (req, res, next) => {
     
+    passport.authenticate('local-login',
+     async (err, user, info) => {
 
-router.route('/api/v1/signup').post(
-    passport.authenticate('local-register', {
-        failureRedirect: '/register',
-        successRedirect: '/home'
-    }),  (err, user, info) => { // This is a callback which accesses the verify (done) function in the passport strategy.
-        if (err) {
-            console.log(err)
-        }
-        // TODO: Figure out a way to display the failure message
+        await handlePassportDone(err, user, info, req, res, next)
+        // console.log('Callback called?')
+        // if (err) {return next(err)}
 
-        // Custom Failure Redirect
-        // else if (info) {
-        //     module.exports.failureMessage = info.message
+        // // * If there's no error, but no user, then the user is unauthenticated.
+        // // * They entered invalid credentials. This has to be shown on the front end
+        // if (!user) {
+        //     console.log(req)
         //     return res.redirect('/')
         // }
-})
+
+        // // * Custom success redirect
+
+        // // Find the home task list (its a default list) get its id
+        // const home = await Task_List.findOne({
+        //     where: {
+        //         user_id: user.id,
+        //         default_list: true
+        //     }
+        // })
 
 
-    // (req, res) => {
-    //     // if(req.isAuthenticated()) {
-    //     //     req.login(req.user, (err) => {
+        // req.login(user, function(err) {
+        //     if (err) { return next(err); }
+        //     return res.redirect(`/task-lists/${home.list_id}`);
+        // });
 
-    //     //         console.log('REQ.LOGIN HAS BEEN CALLED')
+        // redirect to the route for that task list
+        // return res.redirect(`/task-lists/${home.list_id}`)
+        // return res.redirect('https://www.passportjs.org/concepts/authentication/middleware/')
 
-    //     //         if (err) { return next(err) }
-    //     //     })
-    //     // }
-    // }
+    })(req, res, next)
+
+    }
+)
+    
+
+router.route('/api/v1/signup').post( (req, res, next) => {
+
+
+    passport.authenticate('local-register',
+
+        async (err, user, info) => {
+
+            await handlePassportDone(err, user, info, req, res, next)
+
+        }
+
+    )(req, res, next)
+
+}
+
+    // passport.authenticate('local-register', {
+    //     failureRedirect: '/register',
+    //     successRedirect: '/home'
+    // })
+)
 
 // Logout GET Route
 router.route('/logout').post(logout)
@@ -148,7 +200,7 @@ router.route('/add/task-list').post(async (req, res) => {
     await Task_List.sync({})
 
     // Get the user inputted info
-    const { list_name } = req.body
+    const { taskListName } = req.body
 
     // console.log('The post request, hopefully:', req.body)
 
@@ -158,21 +210,23 @@ router.route('/add/task-list').post(async (req, res) => {
     
     // create a new task list. 
     const taskList = (await Task_List.create({
-        list_name: list_name,
+        list_name: taskListName,
         user_id: user
-    }))
+    })).get({plain: true})
 
-    const newTaskList = {list_name: taskList.get('list_name', {plain: true}),
-                         list_id: taskList.get('list_id', {plain: true})}
+    // const newTaskList = {list_name: taskList.get('list_name', {plain: true}),
+    //                      list_id: taskList.get('list_id', {plain: true})}
 
 
-    // console.log('TASK LIST: ', newTaskList)
+    // console.log('TASK LIST: ', taskList)
+
+    taskList.current = false;
 
     // Create the array of task lists, or append if it already exists. 
     if (!req.app.locals.taskLists) {
-        req.app.locals.taskLists = [newTaskList]//[newTaskList.get({plain: true})]
+        req.app.locals.taskLists = [taskList]//[newTaskList.get({plain: true})]
     } else {
-        req.app.locals.taskLists.push(newTaskList)
+        req.app.locals.taskLists.push(taskList)
     }
 
     // TODO: Register a helper for whichPartial --> Dynamically render partial?
@@ -182,7 +236,9 @@ router.route('/add/task-list').post(async (req, res) => {
     //     task_list_name: newTaskList
     // }])
 
-    res.json(newTaskList)
+    // res.json(taskList)
+
+    res.redirect(`/task-lists/${taskList.list_id}`)
 
     // console.log(taskListName)
     }
@@ -192,6 +248,7 @@ router.route('/add/task-list').post(async (req, res) => {
         }
     }
 })
+
 
 // * Add task Route (from AJAX on HBS page?)
 router.route('/add/task').post( async (req, res) => {
@@ -207,7 +264,7 @@ router.route('/add/task').post( async (req, res) => {
         // TODO: import other items the user may want: duedate? prior score?
         const { task_name } = req.body
     
-        console.log(task_name)
+        // console.log(task_name)
 
         if (task_name.trim() == '') {
             return res.status(400).json(null)
@@ -235,6 +292,17 @@ router.route('/add/task').post( async (req, res) => {
                 req.app.locals.allTasks.push(taskModel)
             }
 
+            if (!req.app.locals.currentTasks) {
+                req.app.locals.currentTasks = [
+                    taskModel
+                ]
+            } else {
+                req.app.locals.currentTasks.push(taskModel)
+            }
+
+            // console.log(req.app.locals.currentTasks)
+            
+
             // Send back the necessary task info. 
             res.status(201).json(taskModel.get({plain: true}))
 
@@ -254,26 +322,28 @@ router.route('/delete/task').delete(async (req, res) => {
 
 
     try {
+        // console.log('\nBEGINNING OF DELETE ROUTE\n');
+
         const { task_id } = req.body
-        console.log('The current task ID: ', task_id)
+        // console.log('The current task ID: ', task_id)
         
         // TODO: Remove the task from all locals (req.app.locals)
         
         // * Remove from the object containing all the tasks.
-        console.log(req.app.locals)
+        // console.log(req.app.locals)
         if (req.app.locals.allTasks) {
-            console.log('\nIN DELETE TASKS, ITS STILL DEFINED')
+            // console.log('\nIN DELETE TASKS, ITS STILL DEFINED')
         }
 
         let taskIndex = req.app.locals.allTasks.findIndex((task) => task.task_id == task_id)
-        console.log('GLobal task index: ', taskIndex)
+        // console.log('GLobal task index: ', taskIndex)
         req.app.locals.allTasks.splice(taskIndex, 1)
 
         // * Remove from the object containing the tasks on the current page.
-        console.log(req.app.locals.currentTasks)
+        // console.log(req.app.locals.currentTasks)
 
         taskIndex = req.app.locals.currentTasks.findIndex((task) => task.task_id == task_id)
-        console.log('Local task index:', taskIndex)
+        // console.log('Local task index:', taskIndex)
         req.app.locals.currentTasks.splice(taskIndex, 1)
 
         // * REMOVE THE TASK FROM THE DB
@@ -281,11 +351,17 @@ router.route('/delete/task').delete(async (req, res) => {
 
         // * Send back a response.
         res.status(200).json({success: true})
+
+        // console.log('\nEND OF DELETE TASK ROUTE\n')
     }
     catch (err) {
         console.log(err)
     }
 
+})
+
+router.route('/delete/task-list').delete( async (req, res) => {
+    
 })
 
 

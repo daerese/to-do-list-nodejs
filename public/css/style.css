@@ -7,6 +7,20 @@
     --btn-icon-light: #5586d9;
     --color-main-opaque: #b39cd07c;
     --color-main: #b390df;
+    --color-main-sat: #845EC2;
+
+
+    /* * Pixels / Positional variables */
+    --form-inner-padding: 0 3.5rem;
+
+    --sidenav-list-pading: 0 14px;
+
+    --header-body-spacing: 60px;
+
+    --btn-icon-hover: rgba(230, 230, 230, 0.308);
+    --btn-icon-hover-dark: rgba(170, 170, 170, 0.308);
+
+    --btn-icon-active: rgba(202, 202, 202, 0.466);
 }
 
 *, *::before, *::after {
@@ -17,6 +31,8 @@ html {
     min-height: 100vh;
 }
 
+
+/* *Base Styles and Resets* */
 body {
     /* background: lightcoral; */
     background: var(--bg-light);
@@ -27,6 +43,13 @@ body {
     /* height: 100%; */
 }
 
+input {
+    font-family: inherit;
+}
+
+/*************************************/
+/* * Universal styles */
+/*************************************/
 
 /* *Typography* */
 a {
@@ -38,10 +61,53 @@ p {
     font-size: .875rem; 
 }
 
+li {
+    list-style-type: none;
+}
+
 
 /* *Utilities */
 .bold {
     font-weight: 700;
+}
+
+.highlight {
+    color: var(--color-main-sat);
+}
+
+.highlight-red {
+    color: rgb(185, 26, 26);
+}
+
+/* *Toggle animations */
+
+.rotate {
+    transform: rotate(90deg);
+    background: rgba(202, 202, 202, 0.466);
+}
+
+.toggled {
+    color: var(--color-main-sat) !important;
+}
+
+
+
+*::-webkit-scrollbar {
+    background-color: transparent;
+    width: 10px;
+}
+
+/* *Scrollbar foreground */
+*::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.205);
+    /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.219); */
+    border-radius: 8px;
+    /* width: 5px; */
+}
+
+/* * Scrollbar Background */
+*::-webkit-scrollbar-track {
+    /* background: blue; */
 }
 
 /* *Buttons* */
@@ -49,18 +115,30 @@ p {
 .btn {
     /* margin: 0; */
     transition-duration: 300ms;
+    /* font-family: 'Poppins', sans-serif; */
+    font-family: inherit;
 }
 
 .btn:hover {
     cursor: pointer;
 }
 
-.btn-icon {
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;  
-    padding: 0px 10px; 
+/* The [submit] is for browsers only supporting CSS2 */
+.btn:disabled,
+.btn[disabled] {
+    /* background: red; */
+    pointer-events: none;
 }
+
+.btn-icon {
+    /* background: transparent; */
+    border: none; 
+    background:transparent;
+    font-size: 1.2rem;
+    /* font-size: .7rem; */
+}
+
+
 
 .btn-icon-light {
     color: var(--color-main-opaque);   
@@ -78,31 +156,288 @@ p {
     opacity: 1;
 }
 
+
+/* * Add and Complete Task Button */
+
 .btn-complete-task {
+    background: transparent;
+    /* font-size: 1.2rem;   */
+    padding: 0px 10px;
     /* display: inline-block; */
 }
+
+/* * Edit list button */
+#btn-edit-list {
+    /* opacity: .8; */
+    border-radius: 50%;
+    font-size: 1rem;
+    /* color:rgb(104, 104, 104) */
+    color: rgba(128, 128, 128, 0.479);
+}
+
+#btn-edit-list:hover {
+    /* background: var(--btn-icon-hover-dark); */
+    color: var(--color-main-sat);
+}
+
+/* * Login/Register buttons */
+
+.btn-login {
+    display: block;
+    width: 100%;
+
+    border-radius: 12px;
+
+    padding: 12px 20px;
+
+    font-style: inherit;
+    font-size: 1rem;
+
+    font-weight: 600;
+
+    box-shadow: 0px 5px 6px rgba(0, 0, 0, 0.226);
+
+}
+
+.btn-login-main {
+    border: none;
+
+    background: var(--color-main-sat);
+
+    color: white;
+}
+
+.btn-login-secondary {
+    background: white;
+
+    color: black;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+/******************************/
+/* * LOGIN AND REGISTER PAGE */
+
+/* 
+? Note: styles in this section labeled with login also apply to the register page.
+*/
+
+.header-login {
+    width: 100%;
+    background: transparent;
+    position: fixed;
+    z-index: 1;
+    padding: 0 2rem;
+}
+
+.wrapper-login {
+    position: relative;
+    width: 100%; 
+    height: 100vh;
+    display: grid; 
+    grid-template-columns: 1fr 1fr;
+    /* border: 1px solid yellow; */
+
+    /* To center the items */
+}
+
+.wrapper-form {
+    width: 100%;
+    height: 100%;
+    /* border: 1px solid maroon; */
+    /* text-align: center; */
+
+    display: grid;
+    align-items: center;
+    justify-items: center;
+}
+
+.container-form {
+    width: 78%;
+    text-align: center;
+    /* border: 1px solid orange; */
+}
+
+.container-form h1 {
+    margin-top: 0;
+}
+
+.container-inputs {
+    padding: 0 3.5rem;
+}
+
+.input-login {
+    width: 100%;
+    padding: 12px 20px;
+    display: block;
+    transition-duration: 200ms;
+    margin-bottom: 1.2rem;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.input-login:focus {
+    outline: none;
+    border-color: #7A5CFA; 
+}
+
+.separator {
+    display: flex;
+    /* border: 1px solid black; */
+    align-items: center;
+    margin: 1rem 0;
+    padding: var(--form-inner-padding);
+}
+
+.separator p {
+    flex-shrink: 1;
+    margin: 0 14px;
+}
+
+.separator hr {
+    flex-grow: 1;
+    height: 2px;
+}
+
+.wrapper-bg-image {
+    /* border: 1px solid green; */
+    /* height: 100%; */
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.137), rgba(0, 0, 0, 0.171)), url("images/scenery-of-body-of-water.jpg");
+
+    background-position: center;
+    background-size: cover;
+}
+
+
+
+
 
 /******************************/
 /* Header Navigation */
 
 /* * Header Nav */
 .wrapper-nav {
-    background: #B39CD0;
+    /* background: #B39CD0; */
+    background: var(--color-main-sat);
+    /* background: white; */
     /* padding: 16px .75rem; */
     /* padding: 10px; */
+
+    /* * Display grid helps with centering (the navbar). */
+    display: grid;
+    align-items: center;
+
     position: fixed;
-    z-index: 1;
+    z-index: 2;
     top: 0px;
     width: 100%; 
-    height: 60px;
-    z-index: 1;
+    /* height: 60px; */
+    height: var(--header-body-spacing);
 
+    padding: 0 14px;
+}
+
+
+.logo-white {
+    /* color: white; */
 }
 
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+}
+
+.navbar *:not(.tooltip *) {
+    color: rgb(255, 255, 255);
+}
+
+/* * Right side navbar --> tooltip logout */
+.navbar-right {
+    /* border: 1px solid blue; */
+    position: relative;
+}
+
+.btn-settings {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    border-radius: 50%;
+    text-align: center;
+    font-size: inherit;
+}
+
+.btn-settings:hover {
+    background: rgba(230, 230, 230, 0.308);
+}
+
+.btn-tooltip {
+    display: block;
+    border: none;
+    background: transparent;
+    font-weight: bold;
+    display: flex;
+    width: 100%;
+    border-radius: 4px;
+
+    padding: .2rem 10px;
+
+    align-items: center;
+}
+
+.btn-tooltip > * {
+    /* pointer-events: none; */
+    /* border: 1px solid orange; */
+}
+
+.btn-tooltip:hover {
+    background: rgb(233, 233, 233);
+}
+
+
+.btn-tooltip-icon {
+    margin-right: 10px;
+}
+
+.tooltip {
+    z-index: 3; 
+    color: black;
+    position: absolute;
+    border: 1px solid orange;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.226);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.13); 
+    border-radius: 10px;
+
+    /* right: 0; */
+    /* top: 0; */
+    width: 125px;
+
+    padding: 8px 2px;
+    /* overflow: hidden; */
+    /* visibility: hidden; */
+    display: none;
+}
+
+/* * The tooltip located in the navbar under the settings btn */
+#tooltip-settings {
+    right: 0;
+}
+
+.tooltip hr {
+    margin: 5px 0;
+    opacity: .7;
+}
+
+.tooltip-ul {
+    padding: 0;
+    margin: 0;
+    /* border: 1px solid green; */
 }
 
 /******************************/
@@ -112,11 +447,11 @@ p {
     /* display: flex; */
     /* border: 3px solid green; */
     position: relative;
-    margin-top: 60px; /* TODO: Set the margin top dynamically in JS */
-    height: calc(100vh - 60px);
-    overflow-y: scroll;
+    margin-top: var(--header-body-spacing);
+    height: calc(100vh - var(--header-body-spacing));
+    /* overflow-y: scroll; */
     /* min-height: 100vh; */
-    border: 1px solid orange;
+    /* border: 1px solid orange; */
 }
 
 /* * Sidenav */
@@ -134,34 +469,182 @@ p {
 }
 
 .task-lists-container-header > p {
-    margin-left: 12px;
+    /* margin-left: 14px; */
+    padding: 0 14px;
 }
 
 .task-lists-container-body {
-    padding: 0 14px; 
+    /* padding: 0 14px;  */
 }
+
+.wrapper-task-list {
+    /* background: rgb(230, 230, 230); */
+    background: transparent;
+    margin-bottom: 5px;
+    padding: 0 14px;
+    position: relative;
+    transition-duration: 150ms;
+}
+
+.wrapper-task-list:hover {
+    background: rgb(230, 230, 230);
+}
+
+.wrapper-task-list[aria-current="true"] {
+    background: #d0bee7;
+}
+
+.hover-background {
+    background: lightblue;
+    /* position: absolute; */
+    /* width: 5px; */
+    z-index: 1;
+}
+
+.wrapper-task-list .task-list {
+    /* z-index: 1; */
+    padding: 6px 0;
+}
+
+/* * New list input form */
+#new-task-list {
+    display: flex;
+    transition-duration: 200ms;
+    /* border: 1px solid green; */
+    padding: 6px 14px;
+    /* background: #bcadce25; */
+}
+
+#new-task-list input {
+    flex-grow: 1;
+    outline: none;
+    border: none;
+    background: none;
+    
+    /* width: 100%; */
+}
+
+#new-task-list:hover, 
+#new-task-list:focus-within {
+    background: #bcadce25;
+}
+
+
 
 /* * Main container */
 .container-main {
-    padding: 10px 20px;
+    /* padding: 10px 20px; */
     margin-left: 16rem;
-    border: 1px solid red; 
+    /* border: 1px solid red;  */
+    overflow: hidden;
+    position: relative;
+    width: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 
 .container-main-top {
-    position: fixed;
-    /* background: transparent; */
-    /* margin-left: 50px; */
+    
+    z-index: auto;
+    width: auto;
+    padding: 0 20px;
+    margin-bottom: 2rem;
+}
+
+.main-header {
+    display: flex;
+    align-items: center;
+}
+
+.edit-list-container {
+    position: relative;
+    /* border: 1px solid green; */
+}
+
+#tooltip-edit-list {
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+.main-header h1 {
+    margin-right: 10px;
 }
 
 .container-main-body {
     /* border: 1px solid blue; */
-    margin-top: calc(var(--task-margin-top) + 20px);
+    /* margin-top: calc(var(--task-margin-top) + 20px); */
     /* overflow-y: scroll; */
+    /* height: fit-content; */
+    overflow-y: auto;
+    z-index: 2;
+    padding: 0 20px;
+    flex-grow: 1;
 }
 
 
+/* ******Task Input****** */
+
+/* submit button */
+.btn-icon-submit {
+    /* background: var(--color-main-opaque); */
+    background: var(--color-main);
+    color: white;
+    border: none;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    font-size: .7rem;
+    transition-duration: 200ms;
+    margin-right: .6rem;
+    /* padding: 20px; */
+}
+
+.btn-icon-submit:hover {
+    background: #9454e2e1;
+}
+
+.btn-icon-submit-alt {
+    color: inherit;
+    background: none;
+    font-size: .7rem;
+    border: none;
+}
+
+/* TODO: Add a script to add pointer events to the icon button and un-disable it. */
+
+#btn-new-task:disabled,
+#btn-new-task[disabled] {
+    background: var(--color-main-opaque);
+}
+
+/* Input form */
+.form-add-task {
+    display: flex;
+    padding-right: 2rem;
+}
+
+/* Input field */
+.task-input {
+    background: transparent;
+    transition-duration: 250ms;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid black;
+    opacity: .4;
+    /* width: 100%; */
+    flex-grow: 1;
+}
+
+.task-input:focus {
+    outline: none;
+    opacity: 1;
+}
+
+#btn-new-task {
+    
+}
 
 /* ******Tasks****** */
 .task-container {
@@ -214,5 +697,7 @@ p {
 .task-container-right {
     /* align-self: flex-end; */
 }
+
+
 
 

@@ -29,8 +29,12 @@
 
 
     {{#*inline 'task-list'}}
-        <div class="wrapper-task-list" id="wrapper-task-list">
+        <div class="wrapper-task-list" id="task-list-{{this.list_id}}" aria-current="{{this.current}}">
+
+            {{!-- <div class="hover-background"></div> --}}
             <p class="task-list"><a href="/task-lists/{{this.list_id}}">{{this.list_name}}</a></h2>
+
+
         </div>
     {{/inline}}
 
@@ -39,7 +43,49 @@
     {{/inline}}
 
     {{!-- * Utilizing a Partial we registered --}}
-    {{> header}}
+    <!--{{> header}}-->
+
+    <header class="wrapper-nav">
+    
+    <nav class="navbar">
+        <div class="navbar-left">
+            <h3 class="logo-white"><a href="/home">DoStuff</a></h3>
+        </div>
+
+        <div class="navbar-right">
+            <div class="btn btn-icon btn-settings" id="btn-settings">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+
+            <div class="tooltip" id="tooltip-settings">
+
+                <ul class="tooltip-ul">
+                    <li>
+                        {{!-- <form class="form-tooltip" action="/logout" method="POST"> --}}
+                            <button class="btn btn-tooltip" type="submit">
+                                <i class="btn-tooltip-icon fa-solid fa-clock-rotate-left"></i> History
+                            </button>
+                        {{!-- </form> --}}
+                    </li>
+                    <hr>
+                    <li class="tooltip-item">
+                        <form class="form-tooltip" action="/logout" method="POST">
+                            <button class="btn btn-tooltip highlight-red" type="submit">
+                                <span class="btn-tooltip-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                                
+                                <span class="btn-tooltip-text">Logout</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+
+            </div>
+        </div> 
+    </nav>
+
+    <div class="hover-overlay"></div>
+
+</header>
 
     <div class="wrapper-main">
 
@@ -48,7 +94,7 @@
             <div id="task-lists-container">
                 
                 <div class="task-lists-container-header">
-                    <p class="bold">Lists</p>
+                    <p class="bold lists-header">Default Lists</p>
                     <hr>
                 </div>
 
@@ -56,7 +102,36 @@
                     {{#if taskLists}}
 
                         {{#each taskLists}}
-                            {{> task-list}}
+
+                            {{#if this.default_list}}
+                                {{> task-list}}
+                            {{/if}}
+                            
+                        {{/each}}
+
+                    {{/if}}
+                </div>
+                
+                <div class="task-lists-container-header">
+                    <p class="bold lists-header">Lists</p>
+                    <hr>
+                </div>
+
+                <form method="POST" action="/add/task-list"  id="new-task-list">
+                    <button class="btn btn-icon-submit-alt" type="submit">
+                        <i class="fa-solid fa-arrow-down"></i>
+                    </button>
+                    <input type="text" name="taskListName" id="task-list-input" 
+                           placeholder="Add a new list" autocomplete="off" />
+                </form>
+
+                <div class="task-lists-container-body">
+                    {{#if taskLists}}
+
+                        {{#each taskLists}}
+                            {{#unless this.default_list}}
+                                {{> task-list}}
+                            {{/unless}}
                         {{/each}}
 
                     {{/if}}
@@ -73,9 +148,36 @@
 
                 {{!-- * The top contians the title, and task input with a fixed position --}}
 
-                {{!-- Insert name of list here --}}
-                <h1>{{currentList.list_name}}</h1>
-                {{!-- <h1>Hello</h1> --}}
+
+                <div class="main-header">
+                    <h1>{{currentList.list_name}}</h1>
+
+
+                    
+                        <div class="edit-list-container">
+                            <button class="btn btn-icon" id="btn-edit-list">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+
+                            <div class="tooltip" id="tooltip-edit-list">
+                                <ul class="tooltip-ul">
+
+                                    {{!-- TODO: Insert Rename List button --}}
+                                    <li>
+                                        {{!-- <form class="form-tooltip" action="/logout" method="POST"> --}}
+                                            <button class="btn btn-tooltip highlight-red" type="submit">
+                                                    <span class="btn-tooltip-icon"> <i class="fa-regular fa-trash-can"></i> </span>
+                                                    <span class="btn-tooltip-text">Delete list</span>
+                                            </button>
+                                        {{!-- </form> --}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    
+                </div>
+
+            
                 
                 <div class="add-task-container">
 
@@ -83,13 +185,23 @@
                     {{!-- TODO: Make that button inactive and grey when no text is there. --}}
 
                     <form id="new-task" class="form-add-task">
-                        <input class="task-input" id="task-input-name" name="task-title" type="text" />
-                        <button class="btn btn-primary" type="submit">Add Task</button>
+                        <button class="btn btn-icon-submit" type="submit" id="btn-new-task" disabled>
+                                <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+
+                        <input class="task-input" id="task-input-name" name="task-title" type="text" 
+                                placeholder="Add a new task" />
+
+                        <div class="add-task-options">
+
+                        </div>
+                        
                     </form>
 
 
                 </div>
             </div>
+        
 
             <div class="container-main-body">
                 {{!-- * The body contains all the tasks created by the user. --}}
@@ -200,21 +312,96 @@
 <script>
 
 
-$(document).ready( () => {
-    //$('.wrapper-main').css('margin-top', `${$('.wrapper-nav').css('height')}`)
-})
-
 // We will add a new task through ajax. 
 
 // Wait for the doc to be fully loaded before executing
 $(document).ready( () => {
+
+    // DELETE Request for removing tasks from the screen.
+    //$('.complete-task').on('submit', function (event) {
+
+    /* ? The reason I call on $(document) instead of the direct element is because
+          ? without this, the ENTIRE page would refresh. So, preventDefault will apply to the whole page. 
+          ? and WON'T refresh. 
+    */
+    $(document).on('submit', '.complete-task', function(event) {
+        // Override the default.
+        event.preventDefault()
+        //event.stopImmediatePropagation()
+        console.log('Submit event called')
+
+        // This is how we can directly access the id of a task. Which we can then pass in our request.
+        const selectedTaskElement = event.currentTarget.closest('.task-container')
+
+        $.ajax( {
+            url: 'http://localhost:3000/delete/task',
+            data: {task_id: selectedTaskElement.getAttribute('data-id')}, // Sending the id number as our request.
+            method: 'DELETE',
+        }).then( (res) => {
+            
+            if (res.success) {
+                // Remove the selected element from DOM if request was successful.
+                selectedTaskElement.remove()
+
+                console.log('Task successfully deleted?')
+            }
+        }).catch((err) => {
+            console.log(err)
+        }) 
+    })
+
+    /*$('#new-task-list').on('submit', () => {
+        event.preventDefault();
+
+        console.log('\nFUNCTION CALLED\n')
+
+        // Acquire the data
+        const data = {list_name: ($('#task-list-input').val()).trim()}
+        console.log('THE DATA', data)
+
+       if (data.list_name) {
+            $.ajax({
+                url: 'http://localhost:3000/add/task-list',
+                data: data,
+                method: 'POST',
+            })/*.then( (res) => {
+                console.log('POST REQUEST SUCCESSFUL:', res)
+
+                // *append res content to the page.
+                //$('#task-lists-container').append(`
+                //  <div class="wrapper-task-list" id="wrapper-task-list">
+                    //    <h2><a href="/task-lists/${res.list_id}">${res.list_name}</a></h2>
+                    //</div>
+                //`)
+
+
+                /*const newTaskList = `
+                        <div class="wrapper-task-list" id="task-list-{{this.list_id}}" aria-current="{{this.current}}">
+                            <div class="hover-background"></div>
+                            <p class="task-list"><a href="/task-lists/${res.list_id}">${res.list_name}</a></h2>
+                        </div>
+                    `
+
+                $(newTaskList).insertBefore( $('#new-task-list') )
+
+                $('#task-list-input').val('')
+
+            }).catch((err) => {
+                console.log(err)
+            })
+        
+        }
+
+    })*/
+
+
     $('#new-task').on('submit', (event) => {
 
         // Override the default behavior of the submit event
         event.preventDefault();
 
         // Acquire the new task name 
-        const data =  {task_name: $('#task-input-name').val(),}        
+        const data =  {task_name: $('#task-input-name').val()}        
         console.log('The inputted task name', data)
 
         $.ajax({
@@ -226,6 +413,7 @@ $(document).ready( () => {
             // TODO: Append a new task container.
             // Clear the input.
             $('.task-input').val('')
+            $('#btn-new-task').attr('disabled', 'disabled')
 
             const newTask = `<div class="task-container" data-id="${res.task_id}">
 
@@ -249,7 +437,12 @@ $(document).ready( () => {
 
 
                                     {{!-- * Inline button here --}}
-                                    <button class="btn btn-icon btn-icon-light btn-complete-task"><i class="fa-regular fa-circle-check"></i></button>
+
+                                    <form class="complete-task">
+                                        <button class="btn btn-icon btn-icon-light btn-complete-task" type="submit">
+                                            <i class="fa-regular fa-circle-check"></i>
+                                        </button>
+                                    </form>
                                     <p class="task-title">${res.task_title}</p>
 
                                 </div>
@@ -288,37 +481,73 @@ $(document).ready( () => {
         .catch((err) => {
             console.log(err)
         })
+
+        console.log('Finished?')
     })
 
 
-})
-// DELETE Request for removing tasks from the screen.
-$('.complete-task').on('submit', function (event) {
-    // Override the default.
-    event.preventDefault()
+    // {{!-- * Tooltip activating button. --}}
+    $('#btn-settings').on('click', function () {
 
-    // This is how we can directly access the id of a task. Which we can then pass in our request.
-    const selectedTaskElement = event.currentTarget.closest('.task-container')
-
-    $.ajax( {
-        url: 'http://localhost:3000/delete/task',
-        data: {task_id: selectedTaskElement.getAttribute('data-id')}, // Sending the id number as our request.
-        method: 'DELETE'
-    }).then( (res) => {
+        $(this).toggleClass('rotate')
         
-        if (res.success) {
-            // Remove the selected element from DOM if request was successful.
-            selectedTaskElement.remove()
+        $('#tooltip-settings').toggle('fast', function () {
+            console.log('Toggled')
+            //$('#tooltip-settings').toggle('fast');
+        })
 
-            console.log('Task successfully deleted?')
+    })
+
+    $('#btn-edit-list').on('click', function () {
+
+        $(this).toggleClass('toggled');
+
+        $('#tooltip-edit-list').toggle('fast', function () {
+            console.log('Toggled')
+            //$('#tooltip-settings').toggle('fast');
+        })
+
+    })
+
+    
+    function toggleToolTip(tooltip) {
+        /**
+        * * This function adds a listener to the specified button that toggles the
+        * * specified tooltip.
+        * @param  {string} [btnAnimationClass=null] - Provides the option to add an animation to the button
+        * when the tooltip is toggled.  
+        */
+        
+        $(this).toggle('fast', function () {
+            console.log('Toggled')
+            //$('#tooltip-settings').toggle('fast');
+        })
+    }
+
+    // {{!-- * Keep the submit button disabled unless the input has text --}}
+    // $('#new-task')
+
+    $('#task-input-name').keyup( function () {
+
+        console.log('Keyup')
+
+
+        if ( ($(this).val()).trim() == '' ) {
+            console.log('Empty')
+            $('#btn-new-task').attr('disabled', 'disabled')
+        }  else {
+            console.log('Not empty')
+            $('#btn-new-task').removeAttr('disabled')
         }
-    }).catch((err) => {
-        console.log(err)
-    }) 
+
+
+    })
+      
+
 })
 
+// {{!-- Todo: Add a tooltip to the settings button, animate (rotate) the settings button. --}}
 
-// Add a delete request to your complete button.
 
 </script>
 

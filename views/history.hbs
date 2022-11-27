@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
@@ -24,7 +24,6 @@
 
     {{!-- Fontawesome CDN --}}
     <script src="https://kit.fontawesome.com/a4e8b7b3a4.js" crossorigin="anonymous"></script>
-
 </head>
 <body>
 
@@ -38,29 +37,67 @@
         </div>
     {{/inline}}
 
-    {{!-- * Utilizing a Partial we registered --}}
-    {{> header}}
+    {{#*inline 'task'}}
 
+    {{/inline}}
+
+    {{!-- * Utilizing a Partial we registered --}}
+    <!--{{> header}}-->
+
+    <header class="wrapper-nav">
+    
+    <nav class="navbar">
+        <div class="navbar-left">
+            <h3 class="logo-white"><a href="/home">DoStuff</a></h3>
+        </div>
+
+        <div class="navbar-right">
+            <div class="btn btn-icon btn-settings" id="btn-settings">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+
+            <div class="tooltip" id="tooltip-settings">
+
+                <ul class="tooltip-ul">
+                    <li>
+                        {{!-- <form class="form-tooltip" action="/logout" method="POST"> --}}
+                            <button class="btn btn-tooltip" type="submit">
+                                <i class="btn-tooltip-icon fa-solid fa-clock-rotate-left"></i> History
+                            </button>
+                        {{!-- </form> --}}
+                    </li>
+                    <hr>
+                    <li class="tooltip-item">
+                        <form class="form-tooltip" action="/logout" method="POST">
+                            <button class="btn btn-tooltip" type="submit">
+                                <span class="btn-tooltip-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                                
+                                <span class="btn-tooltip-text">Logout</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+
+            </div>
+        </div> 
+    </nav>
+
+    <div class="hover-overlay"></div>
+
+</header>
 
     <div class="wrapper-main">
-
-        <!--<form id="new-task-list">
-            <p>Create a Task List!</p>
-            <input type="text" name="taskListName" id="taskListName" required />
-            <button type="submit">Add Task List</button>
-        </form>-->
 
         <div class="container-sidenav">
             {{!-- * Display a task list if it exists. --}}
             <div id="task-lists-container">
-
-
+                
                 <div class="task-lists-container-header">
-                    <p class="bold">Default Lists</p>
+                    <p class="bold lists-header">Default Lists</p>
                     <hr>
                 </div>
 
-                <div class="task-lists-container-body" id="default-lists">
+                <div class="task-lists-container-body">
                     {{#if taskLists}}
 
                         {{#each taskLists}}
@@ -75,11 +112,11 @@
                 </div>
                 
                 <div class="task-lists-container-header">
-                    <p class="bold">Lists</p>
+                    <p class="bold lists-header">Lists</p>
                     <hr>
                 </div>
 
-                <div class="task-lists-container-body" id="custom-lists">
+                <div class="task-lists-container-body">
                     {{#if taskLists}}
 
                         {{#each taskLists}}
@@ -90,6 +127,14 @@
 
                     {{/if}}
                 </div>
+
+                <form method="POST" action="/add/task-list"  id="new-task-list">
+                    <button class="btn btn-icon-submit-alt" type="submit">
+                        <i class="fa-solid fa-arrow-up"></i>
+                    </button>
+                    <input type="text" name="taskListName" id="task-list-input" 
+                           placeholder="Add a new list" autocomplete="off" />
+                </form>
 
 
             </div>
@@ -112,7 +157,7 @@
                     {{!-- TODO: Make that button inactive and grey when no text is there. --}}
 
                     <form id="new-task" class="form-add-task">
-                        <button class="btn btn-icon-submit" type="submit">
+                        <button class="btn btn-icon-submit" type="submit" id="btn-new-task">
                                 <i class="fa-solid fa-arrow-up"></i>
                         </button>
 
@@ -230,74 +275,36 @@
             </div>
         </div>
 
-
     </div>
+
+    
+
 
     {{!-- <script src="../js/script"></script> --}}
 
-
-
 <script>
 
+// Wait for the doc to be fully loaded before executing
 $(document).ready( () => {
 
-    $(document).on('submit', '#new-task-list', () => {
 
-        console.log('\nFUNCTION CALLED\n')
+    // {{!-- * Tooltip activating button. --}}
+    $('#btn-settings').on('click', function () {
 
-        event.preventDefault();
-        // Acquire the data
-        const data = {list_name: ($('#taskListName').val()).trim()}
-        console.log('THE DATA', data)
-
-       if (data.list_name) {
-            $.ajax({
-                url: 'http://localhost:3000/add/task-list',
-                data: data,
-                method: 'POST',
-            }).then( (res) => {
-                console.log('POST REQUEST SUCCESSFUL:', res)
-
-                // *append res content to the page.
-                //$('#task-lists-container').append(`
-                //  <div class="wrapper-task-list" id="wrapper-task-list">
-                    //    <h2><a href="/task-lists/${res.list_id}">${res.list_name}</a></h2>
-                    //</div>
-            //`)
-            $('#new-task-list').insertBefore(`
-                    <div class="wrapper-task-list" id="wrapper-task-list">
-                        <h2><a href="/task-lists/${res.list_id}">${res.list_name}</a></h2>
-                    </div>
-            `)
-
-            }).catch((err) => {
-                console.log(err)
-            })
+        $(this).toggleClass('rotate')
         
-        }
+        $('#tooltip-settings').toggle('fast', function () {
+            console.log('Toggled')
+            //$('#tooltip-settings').toggle('fast');
+        })
 
-    }
-
-}
-
-
-
-
+    })
+})
 
 
 
-/* {{!-- TODO: Add a listener to ensure that the submit buttons attached to input forms
-todo     are disabled and opaque IF the form.trim() is empty. --}} */
-
-function listSuccess() {
-
-    
-}
 
 </script>
 
-
 </body>
-
-
 </html>

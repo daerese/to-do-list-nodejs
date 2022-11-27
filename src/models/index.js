@@ -53,6 +53,12 @@ module.exports = () => {
                 autoIncrement: true,
                 primaryKey: true,
             },
+            // ? There are lists that all users have by default. EX: Home.
+            default_list: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false 
+            },
 
             user_id: {
                 type: DataTypes.UUID,
