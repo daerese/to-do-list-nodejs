@@ -37,8 +37,19 @@
         <h3 class="logo">Do<span class="highlight">Stuff</span></h3>
     </header>
 
+
     <div class="wrapper-login">
 
+        {{#if message}}
+            <div class="warning">
+                <p>
+                    <button class="btn-icon btn-icon-close">
+                        <i class="fa-regular fa-circle-xmark"></i>
+                    </button>
+                    {{message}}
+                </p>
+            </div>
+        {{/if}}
 
         <div class="wrapper-form">
 
@@ -86,6 +97,12 @@
         </div>
 
     </div>
+
+<script>
+    $('.btn-icon-close').click( function() {
+        $('.warning').fadeOut();
+    })
+</script>
 
 </body>
 </html>

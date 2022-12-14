@@ -40,8 +40,9 @@ async function handlePassportDone(err, user, info, req, res, next) {
     // * If there's no error, but no user, then the user is unauthenticated.
     // * They entered invalid credentials. This has to be shown on the front end
     if (!user) {
-        console.log(req)
-        return res.redirect('/')
+        console.log('Done info: ', info)
+        req.app.locals.message = info.message
+        return res.redirect('back')
     }
 
     // * Custom success redirect
@@ -58,6 +59,11 @@ async function handlePassportDone(err, user, info, req, res, next) {
     // * custom callback function which OVERRIDES passport.authenticate(), we have to call it ourselves.
     req.login(user, function(err) {
         if (err) { return next(err); }
+
+        if (req.app.locals.message) {
+            req.app.locals.message = null
+        }
+
         return res.redirect(`/task-lists/${home.list_id}`);
     });
 
@@ -127,9 +133,7 @@ router.route('/api/v1/signup').post( (req, res, next) => {
     passport.authenticate('local-register',
 
         async (err, user, info) => {
-
             await handlePassportDone(err, user, info, req, res, next)
-
         }
 
     )(req, res, next)

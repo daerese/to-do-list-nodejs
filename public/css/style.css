@@ -218,6 +218,34 @@ li {
 /******************************/
 /* * LOGIN AND REGISTER PAGE */
 
+.warning {
+    background: rgb(255, 146, 146);
+    padding: 12px 12px;
+    position: absolute;
+    /* margin: 0 auto; */
+    z-index: 5;
+    /* color: rgb(245, 75, 75); */
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.13); 
+
+    /* width: 100px; */
+    top: 12px;
+    left: 25%;
+    transform: translateX(-50%);
+}
+
+.btn-icon-close {
+    color: white;
+    cursor: pointer;
+    padding-left: 0;
+    font-size: 1rem;
+}
+
+.warning p {
+    margin: 0
+}
+
 /* 
 ? Note: styles in this section labeled with login also apply to the register page.
 */
@@ -665,19 +693,30 @@ li {
 .task-container-center {
     flex: 1;
     margin-left: 60px;
-    border: 1px solid green;
+    /* border: 1px solid green; */
 }
 
 .task-main {
-    border: 1px solid red;
+    /* border: 1px solid red; */
     margin: 0;
     padding: 0;
+    height: 100%;
 }
 
 .task-main > * {
     display: inline-block;
     margin: 0;
 }
+
+.btn-complete-task {
+    /* padding: 0; */
+}
+
+.subtasks-container {
+    display: none;
+}
+
+
 
 .task-container-left {
     border-right: 1px solid black;

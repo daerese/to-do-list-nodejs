@@ -227,10 +227,18 @@ const renderTasks = async (req, res, listId=null, returnTasks=false) => {
 
 exports.loginPage = (req, res) => {
     res.render('auth/login')
+
+    if (req.app.locals.message) {
+        req.app.locals.message = null
+    }
 }
 
 exports.registerPage = (req, res) => {
     res.render('auth/register')
+    
+    if (req.app.locals.message) {
+        req.app.locals.message = null
+    }
 }
 
 exports.homePage = async (req, res) => {

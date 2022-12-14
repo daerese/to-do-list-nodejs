@@ -91,7 +91,7 @@ module.exports.passportConfig =  async () => {
                 else { 
                     console.log('1. USER NOT FOUND, EMAIL VALID')
                     if ((password.trim()).length >= 8) {
-                        // Is it alphaNumeric?
+                        // * Is it alphaNumeric?
                         hasNumber = /\d/;
                         console.log('2. PASSWORD IS LONG ENOUGH')
                         if ( hasNumber.test(password) /*&& password == password.toUpperCase()*/ ) {
@@ -137,12 +137,12 @@ module.exports.passportConfig =  async () => {
                             } 
                         }
                     } else {
-                        message = 'The password must be at least 8 characters'
+                        message = 'The password must be alphanumeric and at least 8 characters'
                         console.log('PASSWORD INCORRECT?')
                     }
                 }
                 // Otherwise, the validation failed
-                console.log(message)
+                // console.log(message)
 
                 return done(null, false, {message: message})
             }
