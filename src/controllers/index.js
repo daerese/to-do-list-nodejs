@@ -1,7 +1,6 @@
 /*
 * This module provides the functions to render each page. As well as 
-* what to do when a user logs out. 
-
+* what to do when a user logs in/out. 
 
 * Notes about user data (Tasks, Task lists):
 
@@ -16,20 +15,14 @@
 *   - app.locals.currentTasks --> The tasks associated with the current Task List.
 
 
-
 * onSubmit="console.log('New Task called'); return false; // Returning false stops the page from reloading"
 */
 
 const { get } = require('../routes');
 
-// const passport = require('passport')
-
 const { Task_List,
         User,
         Task } = require('../models')()
-
-// const Pjax = require('pjax')
-// const express_pjax = require('express-pjax')
 
 
 /* ******************** 
@@ -37,7 +30,6 @@ const { Task_List,
 ********************** */
 
 const getUser = (req, res, returnFullUser=false) => {
-    // console.log('User?: ', req.session.passport.user)
 
     if (returnFullUser) {
         return req.user;
@@ -49,14 +41,13 @@ const getUser = (req, res, returnFullUser=false) => {
 const getTaskList = (listId=null, taskLists) => {
 
     /**
-     * * Get a specific task list from the current user THis will be used the 
+     * * Get a specific task list from the current user. This will be used by the 
      * * Task list page the user selects.
      * 
      * * if listId == null, we'll render the home page list.
      */
 
     try {
-
 
         if (listId) {
             // * Reset the current state of the taskLists
@@ -132,27 +123,6 @@ const renderTaskLists = async (req, res, returnLists=false) => {
         raw: true
     })
 
-    // * If the user has NO LISTS AT ALL, they are new. Every new user should have 
-    // * A home list created. ALL users at least have 1 list --> home. 
-
-    // if (taskLists.length === 0) {
-    //     // * Create a home list.
-    //     const home = (await Task_List.create({ 
-    //         list_name: 'home',
-    //         default_list: true,
-    //         user_id: user,
-    //     })).get({plain: true})
-
-    //     home.current = true
-        
-    //     console.log('\nNew task List created??', home)
-    // }
-    // else {
-    //     console.log('\n LISTS HAVE BEEN FOUND', taskLists)   
-    // }
-
-    // console.log('Successful: ', taskLists)
-
     if (taskLists) { 
 
         // * Add the 'current' property to all task lists, even if it's just one list.
@@ -167,13 +137,11 @@ const renderTaskLists = async (req, res, returnLists=false) => {
 
         // * Add the user's task list(s) to app.locals
         req.app.locals.taskLists = taskLists
-        // res.locals.taskLists = taskLists
     
     } else {
         // Todo: throw an error instead
         req.app.locals.taskLists = null
     }
-
     if (returnLists) {
         return taskLists
     }
@@ -222,7 +190,7 @@ const renderTasks = async (req, res, listId=null, returnTasks=false) => {
 }
 
 /* ******************** 
-* FUNCTIONS: Render the pages, then export them 
+* URL Route Functions: (Render the pages, then export the function) 
 ********************** */
 
 exports.loginPage = (req, res) => {

@@ -153,7 +153,9 @@
                     <h1>{{currentList.list_name}}</h1>
 
 
-                    
+
+                        {{#unless currentList.default_list}}
+
                         <div class="edit-list-container">
                             <button class="btn btn-icon" id="btn-edit-list">
                                 <i class="fa-solid fa-pen"></i>
@@ -164,16 +166,18 @@
 
                                     {{!-- TODO: Insert Rename List button --}}
                                     <li>
-                                        {{!-- <form class="form-tooltip" action="/logout" method="POST"> --}}
+                                        <form class="form-tooltip" data-list-id="{{currentList.list_id}} "id="delete-list">
+                                            {{!-- action="/delete/task-list/" method="POST"> --}}
                                             <button class="btn btn-tooltip highlight-red" type="submit">
                                                     <span class="btn-tooltip-icon"> <i class="fa-regular fa-trash-can"></i> </span>
                                                     <span class="btn-tooltip-text">Delete list</span>
                                             </button>
-                                        {{!-- </form> --}}
+                                        </form>
                                     </li>
                                 </ul>
                             </div>
                         </div>
+                        {{/unless}}                    
                     
                 </div>
 
@@ -349,6 +353,27 @@ $(document).ready( () => {
             console.log(err)
         }) 
     })
+
+    $('#delete-list').on('submit', function() {
+        event.preventDefault()
+
+        console.log('delete list event called.')
+
+        const list_id = $('#delete-list').attr('data-list-id')
+        console.log(list_id)
+        
+        $.ajax( {
+            url: `http://localhost:3000/delete/task-list`,
+            data: {list_id: list_id},
+            method: 'DELETE',
+        }).then( (res) => {
+
+            //console.log(res)
+            window.location.href = `http://localhost:3000/task-lists/${res.home_list}`
+        }).catch((err) => {
+            console.log(err)
+        })
+    }) 
 
     /*$('#new-task-list').on('submit', () => {
         event.preventDefault();

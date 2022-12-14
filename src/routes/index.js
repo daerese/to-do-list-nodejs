@@ -1,7 +1,10 @@
 /* 
 * This module is used to define the routes for each page, meaning the GET 
-* and POST methods for each URL. The routes will link to the Controllers 
+* and POST methods for each URL. The routes will link to the Controllers
 * functions to render each page. 
+
+* The routes for working with the application (EX: adding/deleting tasks and task lists) 
+* are on this file as well.
 */
 
 const express = require('express');
@@ -12,11 +15,8 @@ const router = express.Router();
 const { Task_List,
         Task, } = require('../models')()
 
-const hbs = require('hbs');
 
-// const Pjax = require('pjax')
-
-// Importing the controller functions which will render each page. 
+//*  Importing the controller functions which will render each page. 
 const { 
     homePage,
     loginPage,
@@ -29,8 +29,6 @@ const {
 /* ********************
  * UTILITY FUNCTIONS 
  *********************/ 
-
-
 
 async function handlePassportDone(err, user, info, req, res, next) {
 
@@ -68,7 +66,6 @@ async function handlePassportDone(err, user, info, req, res, next) {
     });
 
 }
-
 
 
 /* ********************
@@ -153,7 +150,6 @@ router.route('/logout').post(logout)
  * HELPER FUNCTIONS  
  *********************/
 
-
 function redirectLogin(req, res, next) {
     if (!req.isAuthenticated()) {
         res.redirect('/')
@@ -205,9 +201,6 @@ router.route('/add/task-list').post(async (req, res) => {
 
     // Get the user inputted info
     const { taskListName } = req.body
-
-    // console.log('The post request, hopefully:', req.body)
-
     
     // * Acquring the user id from the current session, which is stored within passport
     const { user } = req.session.passport
@@ -218,11 +211,6 @@ router.route('/add/task-list').post(async (req, res) => {
         user_id: user
     })).get({plain: true})
 
-    // const newTaskList = {list_name: taskList.get('list_name', {plain: true}),
-    //                      list_id: taskList.get('list_id', {plain: true})}
-
-
-    // console.log('TASK LIST: ', taskList)
 
     taskList.current = false;
 
@@ -233,18 +221,8 @@ router.route('/add/task-list').post(async (req, res) => {
         req.app.locals.taskLists.push(taskList)
     }
 
-    // TODO: Register a helper for whichPartial --> Dynamically render partial?
-
-    // // Send a json response contain task list information.
-    // res.json([{
-    //     task_list_name: newTaskList
-    // }])
-
-    // res.json(taskList)
-
     res.redirect(`/task-lists/${taskList.list_id}`)
 
-    // console.log(taskListName)
     }
     catch(err) {
         if (err) {
@@ -267,14 +245,12 @@ router.route('/add/task').post( async (req, res) => {
         // Acquire the input name of the task.
         // TODO: import other items the user may want: duedate? prior score?
         const { task_name } = req.body
-    
-        // console.log(task_name)
 
         if (task_name.trim() == '') {
             return res.status(400).json(null)
         }
 
-        // console.log('WE ARE NOW IN ADD TASK POST: ', req.app.locals)
+
         // Add the task to the sqlize task model (req.app.locals.currentList.list_id)
         const taskModel = await Task.create({
             task_title: task_name,
@@ -303,9 +279,6 @@ router.route('/add/task').post( async (req, res) => {
             } else {
                 req.app.locals.currentTasks.push(taskModel)
             }
-
-            // console.log(req.app.locals.currentTasks)
-            
 
             // Send back the necessary task info. 
             res.status(201).json(taskModel.get({plain: true}))
@@ -365,7 +338,48 @@ router.route('/delete/task').delete(async (req, res) => {
 })
 
 router.route('/delete/task-list').delete( async (req, res) => {
+
+    try {
+
+        // * Acuire the requested list to delete.
+        const {list_id} = req.body;
+
+        console.log(list_id)
+
+        // * Remove from the object containing the task lists.
+        const listIndex = req.app.locals.taskLists.findIndex((list) => list.list_id == list_id)
+        req.app.locals.taskLists.splice(listIndex, 1)
+
+        // * Remove the tasks from the object containing the current tasks.
+        for (let i = 0; i < req.app.locals.allTasks.length; i++) {
+
+            let task = req.app.locals.allTasks[i]
+            
+            if (task.list_id == list_id) {
+                req.app.locals.allTasks.splice(i, 1)
+            }
+        }
+        // * Remove all the tasks that refrence this task list, then remove the task list.
+        
+        await Task.destroy({where: {list_id: list_id}})
+        
+        await Task_List.destroy({where: {list_id: list_id}})
+
+        console.log(req.app.locals.taskLists)
+        
+        // * Redirect to the user's home list
+        
+        const home = req.app.locals.taskLists.find(list => list.default_list == true);
+
+        res.status(200).json({home_list: home.list_id})
+
+        
+    } 
+    catch (err) {
+        console.log(err)
+    }
     
+
 })
 
 
