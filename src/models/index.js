@@ -8,13 +8,23 @@ todo: Generate an index on the foreign keys.
 const {Sequelize, DataTypes, Deferrable} = require('sequelize');
 const { get } = require('../routes');
 
+// const sqlize = new Sequelize({
+//     host: 'localhost',
+//     database: 'to_do_list',
+//     username: 'root',
+//     password: 'pass',
+//     dialect: 'mysql'
+// })
+
 const sqlize = new Sequelize({
-    host: 'localhost',
+    host: 'to-do-list.cnqcetfldysx.us-east-2.rds.amazonaws.com',
+    port: 3306,
     database: 'to_do_list',
-    username: 'root',
-    password: 'pass',
+    username: 'admin',
+    password: '1vHLD8PnQDPyULHPX9B9',
     dialect: 'mysql'
 })
+
 
 module.exports = () => {
 
@@ -67,7 +77,7 @@ module.exports = () => {
                 // * To help us create a foriegn key 
                 references: {
                     // This referneces another model
-                    model: 'users',
+                    model: 'Users',
                     key: 'id',
                     // deferrable: Deferrable.INITIALLY_IMMEDIATE
                 }
@@ -99,7 +109,7 @@ module.exports = () => {
             list_id: {
                 type: DataTypes.INTEGER,
                 references: {
-                    model: 'task_lists',
+                    model: 'Task_Lists',
                     key: 'list_id'
                 }
             },
@@ -110,7 +120,7 @@ module.exports = () => {
                 // * To help us create a foriegn key 
                 references: {
                     // This referneces another model
-                    model: 'users',
+                    model: 'Users',
                     key: 'id',
                     // deferrable: Deferrable.INITIALLY_IMMEDIATE
                 }

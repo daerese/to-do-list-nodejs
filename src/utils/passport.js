@@ -123,7 +123,7 @@ module.exports.passportConfig =  async () => {
 
                                     // * If the user was successfully created, give them a default home task list.
                                     const home = await Task_List.create({ 
-                                        list_name: 'home',
+                                        list_name: 'Home',
                                         default_list: true,
                                         user_id: user.id,
                                     })
@@ -134,8 +134,11 @@ module.exports.passportConfig =  async () => {
                                 } else {
                                     console.log('Error in registration')
                                 }
-                            } 
-                        }
+                            } else {
+                                console.log('PASSWORDS DONT MATCH')
+                                message = 'The passwords must match'
+                            }
+                        } 
                     } else {
                         message = 'The password must be alphanumeric and at least 8 characters'
                         console.log('PASSWORD INCORRECT?')
