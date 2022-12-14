@@ -98,13 +98,6 @@ app.use(passport.session());
 // Tell the app to use the router
 const router = require('./routes');
 
-// // * Middleware Helper Function
-/* // app.use((req, res, next) => {
-//     res.locals.req = req;
-//     console.log(req)
-//     next()
-// }) */
-
 app.use(router)
 
 // Configure the passport strategies 
