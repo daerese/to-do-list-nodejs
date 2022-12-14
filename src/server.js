@@ -51,14 +51,14 @@ const publicPath = path.join(parentDir, 'public')
  * Redis Configuration
  *******************/
 // Setup redis store
-const connectRedis = require('connect-redis')
-const { createClient } = require('redis')
+// const connectRedis = require('connect-redis')
+// const { createClient } = require('redis')
 
 // Create an instance of Connect Redis 
-const RedisStore = connectRedis(session)
+// const RedisStore = connectRedis(session)
 
-const redisClient = createClient()
-redisClient.connect().catch(console.error);
+// const redisClient = createClient()
+// redisClient.connect().catch(console.error);
 
 /* *****************
  * Middleware
@@ -76,7 +76,7 @@ app.set('view engine', 'hbs')
 // Setup the session middleware
 app.use(session({
     cookie: {
-        store: new RedisStore({client: redisClient}),
+        // store: new RedisStore({client: redisClient}),
         sameSite: true,
         secure: false, //False for now while in development
         httpOnly: false, // if true prevent client side JS from reading the cookie
