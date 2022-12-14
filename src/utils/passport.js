@@ -30,6 +30,7 @@ module.exports.passportConfig =  async () => {
         async (email, password, done) => {
 
             try {
+                await User.sync({});
                 console.log('PASSPORT LOGIN STRATEGY...')
 
                 // TODO: Display a different message if the user trying to log in doesn't exist. 
