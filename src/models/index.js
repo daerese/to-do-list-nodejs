@@ -4,26 +4,29 @@
 todo: Generate an index on the foreign keys.
 */
 
+
+
 // Deferrable is something that will help us with creating Foreign Keys. 
-const {Sequelize, DataTypes, Deferrable} = require('sequelize');
-const { get } = require('../routes');
+const {DataTypes, Deferrable} = require('sequelize');
 
-// const sqlize = new Sequelize({
-//     host: 'localhost',
-//     database: 'to_do_list',
-//     username: 'root',
-//     password: 'pass',
-//     dialect: 'mysql'
-// })
+const { Sequelize } = require("sequelize-cockroachdb");
 
-const sqlize = new Sequelize({
-    host: 'to-do-list.cnqcetfldysx.us-east-2.rds.amazonaws.com',
-    port: 3306,
-    database: 'to_do_list',
-    username: 'admin',
-    password: '1vHLD8PnQDPyULHPX9B9',
-    dialect: 'mysql'
-})
+const sqlize = new Sequelize(process.env.DATABASE_URL);
+
+// * Connection test to CockroachDB
+// (async () => {
+//     try {
+//       const [results, metadata] = await sqlize.query("SELECT NOW()");
+//       console.log(results);
+//     } catch (err) {
+//       console.error("error executing query:", err);
+//     } finally {
+//       await sqlize.close();
+//     }
+//   })();
+
+  
+
 
 
 module.exports = () => {

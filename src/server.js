@@ -35,9 +35,9 @@ const app = express()
 // Setup passport 
 const passport = require('passport')
 
-const {
-    PORT = 3000,
-} = process.env
+// const {
+//     PORT = 3000,
+// } = process.env
 
 // Serving our static files within the public folder
 const parentDir = path.resolve(path.dirname(__filename), '..')
@@ -91,8 +91,8 @@ app.use(session({
 // Initialize passport
 app.use(passport.initialize());
 
-// This middleware alters the request object and is able to 
-// attach a ‘user’ value that can be retrieved from the session id. 
+//*  This middleware alters the request object and is able to 
+//*  attach a ‘user’ value that can be retrieved from the session id. 
 app.use(passport.session());
 
 // Tell the app to use the router
@@ -137,6 +137,6 @@ hbs.registerHelper('username', () => {
 
 /***************************************** */
 
-app.listen(PORT, (err) => {
-    console.log(`Listening on port ${PORT}`)
+app.listen(process.env.PORT, (err) => {
+    console.log(`Listening on port ${process.env.PORT}`)
 })

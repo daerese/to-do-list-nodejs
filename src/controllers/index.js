@@ -60,10 +60,7 @@ const getTaskList = (listId=null, taskLists) => {
     
             for (let list of taskLists) {
                 
-                // * If one of the lists is set to current: true, set it to false.
-                // if (list.current == true) {
-                //     list.current = false
-                // }
+               
                 // * Return the preferred list, and set its current state to true.
                 if (list.list_id == listId) {
                     list.current = true
@@ -209,49 +206,49 @@ exports.registerPage = (req, res) => {
     }
 }
 
-exports.homePage = async (req, res) => {
+// exports.homePage = async (req, res) => {
 
-    if (req.isAuthenticated()) {
-        // console.log('WELCOME TO THE HOME PAGE, THE USER IS AUTHENTICATED')
+//     if (req.isAuthenticated()) {
+//         // console.log('WELCOME TO THE HOME PAGE, THE USER IS AUTHENTICATED')
 
-        // * If they're authed, we should have access to their id.
-        try {
-            // Access the task lists, render them.
-            const { user } = req.session.passport
+//         // * If they're authed, we should have access to their id.
+//         try {
+//             // Access the task lists, render them.
+//             const { user } = req.session.passport
 
             
-            // if (!req.app.locals.taskLists) {   
+//             // if (!req.app.locals.taskLists) {   
                 
-            const taskLists = await renderTaskLists(req, res, true)
+//             const taskLists = await renderTaskLists(req, res, true)
                         
-            const home = getTaskList(null, taskLists)
+//             const home = getTaskList(null, taskLists)
 
-            const currentTasks = getTasks(home.list_id, req.app.locals.allTasks)
+//             const currentTasks = getTasks(home.list_id, req.app.locals.allTasks)
 
-            // * Pass home list in to the current list
-            // * Pass current tasks into to locals.current tasks (if exists)
+//             // * Pass home list in to the current list
+//             // * Pass current tasks into to locals.current tasks (if exists)
 
-            req.app.locals.currentList = home
-            req.app.locals.currentTasks = currentTasks
-
-
-            // }
-            if (!req.app.locals.allTasks) {
-                await renderTasks(req, res)
-            }
-            res.render('home', {
-                sessionID: req.sessionID,
-                isAuthenticated: req.isAuthenticated(),
-            })
-
-        }
+//             req.app.locals.currentList = home
+//             req.app.locals.currentTasks = currentTasks
 
 
-        catch(err) {
-            console.log(err)
-        }
-    }
-}
+//             // }
+//             if (!req.app.locals.allTasks) {
+//                 await renderTasks(req, res)
+//             }
+//             res.render('home', {
+//                 sessionID: req.sessionID,
+//                 isAuthenticated: req.isAuthenticated(),
+//             })
+
+//         }
+
+
+//         catch(err) {
+//             console.log(err)
+//         }
+//     }
+// }
 
 exports.profilePage = (req, res) => {
     res.render('profile', {
