@@ -332,7 +332,7 @@ $(document).ready( () => {
         // Override the default.
         event.preventDefault()
         //event.stopImmediatePropagation()
-        console.log('Submit event called')
+        //console.log('Submit event called')
 
         // This is how we can directly access the id of a task. Which we can then pass in our request.
         const selectedTaskElement = event.currentTarget.closest('.task-container')
@@ -347,20 +347,20 @@ $(document).ready( () => {
                 // Remove the selected element from DOM if request was successful.
                 selectedTaskElement.remove()
 
-                console.log('Task successfully deleted?')
+                //console.log('Task successfully deleted?')
             }
         }).catch((err) => {
-            console.log(err)
+            //console.log(err)
         }) 
     })
 
     $('#delete-list').on('submit', function() {
         event.preventDefault()
 
-        console.log('delete list event called.')
+        //console.log('delete list event called.')
 
         const list_id = $('#delete-list').attr('data-list-id')
-        console.log(list_id)
+        //console.log(list_id)
         
         $.ajax( {
             url: `http://localhost:3000/delete/task-list`,
@@ -371,7 +371,7 @@ $(document).ready( () => {
             //console.log(res)
             window.location.href = `http://localhost:3000/task-lists/${res.home_list}`
         }).catch((err) => {
-            console.log(err)
+            //console.log(err)
         })
     }) 
 
@@ -427,14 +427,14 @@ $(document).ready( () => {
 
         // Acquire the new task name 
         const data =  {task_name: $('#task-input-name').val()}        
-        console.log('The inputted task name', data)
+        //console.log('The inputted task name', data)
 
         $.ajax({
             url: 'http://localhost:3000/add/task',
             data: data,
             method: 'POST',
         }).then( (res) => {
-            console.log('Post request successful: ', res)
+            //console.log('Post request successful: ', res)
             // TODO: Append a new task container.
             // Clear the input.
             $('.task-input').val('')
@@ -507,7 +507,6 @@ $(document).ready( () => {
             console.log(err)
         })
 
-        console.log('Finished?')
     })
 
 
@@ -517,7 +516,7 @@ $(document).ready( () => {
         $(this).toggleClass('rotate')
         
         $('#tooltip-settings').toggle('fast', function () {
-            console.log('Toggled')
+            //console.log('Toggled')
             //$('#tooltip-settings').toggle('fast');
         })
 
@@ -528,7 +527,6 @@ $(document).ready( () => {
         $(this).toggleClass('toggled');
 
         $('#tooltip-edit-list').toggle('fast', function () {
-            console.log('Toggled')
             //$('#tooltip-settings').toggle('fast');
         })
 
@@ -544,7 +542,6 @@ $(document).ready( () => {
         */
         
         $(this).toggle('fast', function () {
-            console.log('Toggled')
             //$('#tooltip-settings').toggle('fast');
         })
     }
@@ -554,14 +551,12 @@ $(document).ready( () => {
 
     $('#task-input-name').keyup( function () {
 
-        console.log('Keyup')
-
 
         if ( ($(this).val()).trim() == '' ) {
-            console.log('Empty')
+            //console.log('Empty')
             $('#btn-new-task').attr('disabled', 'disabled')
         }  else {
-            console.log('Not empty')
+            //console.log('Not empty')
             $('#btn-new-task').removeAttr('disabled')
         }
 

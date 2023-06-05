@@ -38,7 +38,7 @@ async function handlePassportDone(err, user, info, req, res, next) {
     // * If there's no error, but no user, then the user is unauthenticated.
     // * They entered invalid credentials. This has to be shown on the front end
     if (!user) {
-        console.log('Done info: ', info)
+        // console.log('Done info: ', info)
         req.app.locals.message = info.message
         return res.redirect('back')
     }
@@ -145,14 +145,10 @@ router.route('/testUser').post( (req, res) => {
         console.log('User is NOT authenticated')
     }
 
-    // console.log(req)
 
-
-    console.log('USER: ', req.user)
-    console.log(req.session.passport)
-    // console.log(req.session)
-    // console.log('cookie: ', req.session.cookie)
-
+    // console.log('USER: ', req.user)
+    // console.log(req.session.passport)
+    
 })
 
 // * Function for testing: Deletes all the tasks 
@@ -251,6 +247,8 @@ router.route('/add/task').post( async (req, res) => {
                 req.app.locals.currentTasks.push(taskModel)
             }
 
+            console.log("Current task: ", taskModel)
+
             // Send back the necessary task info. 
             res.status(201).json(taskModel.get({plain: true}))
 
@@ -316,7 +314,7 @@ router.route('/delete/task-list').delete( async (req, res) => {
         // * Acuire the requested list to delete.
         const {list_id} = req.body;
 
-        console.log(list_id)
+        // console.log(list_id)
 
         // * Remove from the object containing the task lists.
         const listIndex = req.app.locals.taskLists.findIndex((list) => list.list_id == list_id)
@@ -331,13 +329,14 @@ router.route('/delete/task-list').delete( async (req, res) => {
                 req.app.locals.allTasks.splice(i, 1)
             }
         }
+
         // * Remove all the tasks that refrence this task list, then remove the task list.
         
         await Task.destroy({where: {list_id: list_id}})
         
         await Task_List.destroy({where: {list_id: list_id}})
 
-        console.log(req.app.locals.taskLists)
+        // console.log(req.app.locals.taskLists)
         
         // * Redirect to the user's home list
         

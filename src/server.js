@@ -35,9 +35,6 @@ const app = express()
 // Setup passport 
 const passport = require('passport')
 
-// const {
-//     PORT = 3000,
-// } = process.env
 
 // Serving our static files within the public folder
 const parentDir = path.resolve(path.dirname(__filename), '..')
@@ -128,12 +125,6 @@ hbs.localsAsTemplateData(app)
 
 
 // TODO: Add the partials to app.locals?? Access the partial in a route, send it through res.locals? Render?
-
-// * Helpers *//
-hbs.registerHelper('username', () => {
-})
-
-
 
 /***************************************** */
 

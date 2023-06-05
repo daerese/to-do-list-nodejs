@@ -31,7 +31,7 @@ module.exports.passportConfig =  async () => {
 
             try {
                 await User.sync({});
-                console.log('PASSPORT LOGIN STRATEGY...')
+                //console.log('PASSPORT LOGIN STRATEGY...')
 
                 // TODO: Display a different message if the user trying to log in doesn't exist. 
 
@@ -67,7 +67,7 @@ module.exports.passportConfig =  async () => {
         async (req, email, password, done) => {
             try {
 
-                console.log('ATTEMPTING REGISTRATION...')
+                //console.log('ATTEMPTING REGISTRATION...')
                 // Here, take the regular steps to verifying a user's information
                 await User.sync({});
                 await Task_List.sync({});
@@ -82,7 +82,7 @@ module.exports.passportConfig =  async () => {
                 // * Does the user already exist
                 if ( await User.findOne( {where: {email: email}}) ) { 
                     message = 'This email address is taken'
-                    console.log('USER EXISTS?')
+                    //console.log('USER EXISTS?')
                 }
                 // * Valid email address? 
                 else if ( !validator.validate(email) ) { 
@@ -120,7 +120,7 @@ module.exports.passportConfig =  async () => {
 
                                 // return done(null, user)
                                 if (user) {
-                                    console.log('User successfully created')
+                                    //console.log('User successfully created')
 
                                     // * If the user was successfully created, give them a default home task list.
                                     const home = await Task_List.create({ 
@@ -129,20 +129,20 @@ module.exports.passportConfig =  async () => {
                                         user_id: user.id,
                                     })
 
-                                    console.log('\nUSER REGISTERED, HOME LIST CREATED', home)
+                                    //console.log('\nUSER REGISTERED, HOME LIST CREATED', home)
 
                                     return done(null, user)
                                 } else {
                                     console.log('Error in registration')
                                 }
                             } else {
-                                console.log('PASSWORDS DONT MATCH')
+                                //console.log('PASSWORDS DONT MATCH')
                                 message = 'The passwords must match'
                             }
                         } 
                     } else {
                         message = 'The password must be alphanumeric and at least 8 characters'
-                        console.log('PASSWORD INCORRECT?')
+                        //console.log('PASSWORD INCORRECT?')
                     }
                 }
                 // Otherwise, the validation failed
@@ -163,7 +163,7 @@ module.exports.passportConfig =  async () => {
 // be stored in the session (usually the user id).
 passport.serializeUser(async (user, done) => {
     await done(null, user.id)
-    console.log('SERIALIZE USER HAS BEEN CALLED')
+    //console.log('SERIALIZE USER HAS BEEN CALLED')
 })
 
 
@@ -177,7 +177,7 @@ passport.deserializeUser(async (id, done) => {
     if (!user) {
         return done(null, false)
     }
-    console.log('DESERIALIZE USER HAS BEEN CALLED')
+    //console.log('DESERIALIZE USER HAS BEEN CALLED')
     // TODO: Return information for the tasks 
     // Otherwise, return the user information 
     return done(null, user)
