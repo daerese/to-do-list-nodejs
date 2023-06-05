@@ -62,8 +62,9 @@ module.exports = () => {
                 type: DataTypes.STRING,
             },
             list_id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                // autoIncrement: true,
                 primaryKey: true,
             },
             // ? There are lists that all users have by default. EX: Home.
@@ -105,12 +106,13 @@ module.exports = () => {
                 defaultValue: false,
             },
             task_id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                // autoIncrement: true,
                 primaryKey: true,
             }, 
             list_id: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.UUID,
                 references: {
                     model: 'Task_Lists',
                     key: 'list_id'

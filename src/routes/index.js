@@ -332,9 +332,9 @@ router.route('/delete/task-list').delete( async (req, res) => {
 
         // * Remove all the tasks that refrence this task list, then remove the task list.
         
-        await Task.destroy({where: {list_id: list_id}})
+        await Task.destroy({where: {list_id: list_id.trim()}})
         
-        await Task_List.destroy({where: {list_id: list_id}})
+        await Task_List.destroy({where: {list_id: list_id.trim()}})
 
         // console.log(req.app.locals.taskLists)
         
@@ -351,6 +351,10 @@ router.route('/delete/task-list').delete( async (req, res) => {
     }
     
 
+})
+
+router.route('/delete/user').delete( async (req, res) => {
+    
 })
 
 
