@@ -60,14 +60,12 @@
             <div class="tooltip" id="tooltip-settings">
 
                 <ul class="tooltip-ul">
-                    <li>
-                        {{!-- <form class="form-tooltip" action="/logout" method="POST"> --}}
-                            <button class="btn btn-tooltip" type="submit">
-                                <i class="btn-tooltip-icon fa-solid fa-clock-rotate-left"></i> History
-                            </button>
-                        {{!-- </form> --}}
+                    {{!-- <li>
+                        <button class="btn btn-tooltip" type="submit">
+                            <i class="btn-tooltip-icon fa-solid fa-clock-rotate-left"></i> History
+                        </button>
                     </li>
-                    <hr>
+                    <hr> --}}
                     <li class="tooltip-item">
                         <form class="form-tooltip" action="/logout" method="POST">
                             <button class="btn btn-tooltip highlight-red" type="submit">
@@ -226,7 +224,7 @@
 
                                     {{!-- TODO: If there is no score (=0), don't show it. (opacity 0?) --}}
 
-                                    <span id="priority">{{this.priority_score}}</span> 
+                                    {{!-- <span id="priority">{{this.priority_score}--}}
                                     {{!-- * Insert a star --}}
                                 </div>
 
@@ -450,7 +448,7 @@ $(document).ready( () => {
 
                                     {{!-- TODO: If there is no score (=0), don't show it. (opacity 0?) --}}
 
-                                    <span id="priority">${res.priority_score}</span> 
+                                    
                                     {{!-- * Insert a star --}}
                                 </div>
 
