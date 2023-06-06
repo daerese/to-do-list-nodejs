@@ -24,6 +24,10 @@ const path = require('path')
 const session = require('express-session')
 const dotenv = require('dotenv').config()
 
+// * Helmet offers protection from web vulnerabilites
+// * by setting HTTP headers appropiately.
+const helmet = require('helmet')
+
 const livereload = require('livereload')
 const connectLivereload = require('connect-livereload')
 
@@ -71,17 +75,18 @@ app.use(express.static(publicPath))
 app.set('view engine', 'hbs')
 
 // Setup the session middleware
+app.set('trust proxy', 1)
 app.use(session({
     cookie: {
         // store: new RedisStore({client: redisClient}),
         sameSite: true,
-        secure: false, //False for now while in development
-        httpOnly: false, // if true prevent client side JS from reading the cookie
+        secure: true, //False for now while in development
+        httpOnly: true, // if true prevent client side JS from reading the cookie
         //set maxAge later
-        maxAge: 60000 * 60
+        maxAge: 60000 * 60 * 730 // Approx one month
     }, 
     resave: false, // force session to be saved back to session store, even if it wasn't modified during request.
-    secret: 'keyboard cat', // TODO: more secure secret
+    secret: process.env.SESSION_SECRET, // TODO: more secure secret
     saveUninitialized: true, // save an unitialized session to the store.
 }))
 
@@ -102,17 +107,11 @@ const { passportConfig } = require('./utils/passport')
 
 passportConfig()
 
-// Test the sequelize DB connection. 
-// const sqlizeConn = require('./models')
 
-// async function testConnection() {
-//     try {
-//         await sqlizeConn.authenticate();
-//         console.log('Connection has been established successfully.');
-//       } catch (error) {
-//         console.error('Unable to connect to the database:', error);
-//       }
-// }
+// * Setting up helmet and other security options
+app.use(helmet())
+
+app.disable('x-powered-by')
 
 /* ****************** 
 * HBS Configuration
