@@ -207,12 +207,22 @@ li {
     color: white;
 }
 
+.btn-login-main:hover {
+    background: #7e5ab8;
+    box-shadow: 0px 9px 10px rgba(0, 0, 0, 0.226);
+}
+
 .btn-login-secondary {
     background: white;
 
     color: black;
 
     border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.btn-login-secondary:hover {
+    background: rgb(245, 245, 245);
+    box-shadow: 0px 9px 10px rgba(0, 0, 0, 0.226);
 }
 
 /******************************/
@@ -336,6 +346,16 @@ li {
 
     background-position: center;
     background-size: cover;
+}
+
+@media screen and (max-width: 860px) {
+    .wrapper-bg-image {
+        display: none;
+    }
+
+    .wrapper-login {
+        grid-template-columns: 1fr;
+    }
 }
 
 
