@@ -129,10 +129,19 @@ function redirectLogin(req, res, next) {
     }
 }
 
-function redirectHome(req, res, next) {
+async function redirectHome(req, res, next) {
     if (req.isAuthenticated()) {
-        res.redirect('/home')
-        
+        // res.redirect('/home')
+        const { user } = req.session.passport
+
+        const home = await Task_List.findOne({
+            where: {
+                user_id: user,
+                default_list: true
+            }
+        })
+        res.redirect(`/task-lists/${home.list_id}`)
+
     } else {
         next()
     }
