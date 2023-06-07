@@ -338,7 +338,7 @@ $(document).ready( () => {
         const selectedTaskElement = event.currentTarget.closest('.task-container')
 
         $.ajax( {
-            url: 'http://localhost:3000/delete/task',
+            url: 'https://doingstuff.onrender.com/delete/task',
             data: {task_id: selectedTaskElement.getAttribute('data-id')}, // Sending the id number as our request.
             method: 'DELETE',
         }).then( (res) => {
@@ -363,13 +363,13 @@ $(document).ready( () => {
         //console.log(list_id)
         
         $.ajax( {
-            url: `http://localhost:3000/delete/task-list`,
+            url: `https://doingstuff.onrender.com/delete/task-list`,
             data: {list_id: list_id},
             method: 'DELETE',
         }).then( (res) => {
 
             //console.log(res)
-            window.location.href = `http://localhost:3000/task-lists/${res.home_list}`
+            window.location.href = `https://doingstuff.onrender.com/task-lists/${res.home_list}`
         }).catch((err) => {
             //console.log(err)
         })
@@ -432,7 +432,7 @@ $(document).ready( () => {
         //console.log('The inputted task name', data)
 
         $.ajax({
-            url: 'http://localhost:3000/add/task',
+            url: 'https://doingstuff.onrender.com/add/task',
             data: data,
             method: 'POST',
         }).then( (res) => {
