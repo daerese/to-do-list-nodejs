@@ -13,6 +13,7 @@ A simplistic application for creating todo lists.
 ### Helpful resources
 - [alex996 Authentication Notes](https://github.com/alex996/presentations/blob/master/auth.md) - Some core concepts of authentication on the web.
 - [How to manage sessions with Node.js](https://arctype.com/blog/node-session/) - An example of an initial setup of a Node app using sessions, Passport, and Sequelize.
+- [Security Best Practices for Express](https://expressjs.com/en/advanced/best-practice-security.html)
 - [Passport Documentation](https://www.passportjs.org/concepts/authentication/) 
 - [Sequelize Doumentation](https://sequelize.org/docs/v6/category/core-concepts/)
 - [URL Building in Express.js](https://www.pabbly.com/tutorials/express-js-url-building/)
