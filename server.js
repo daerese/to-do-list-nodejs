@@ -41,7 +41,7 @@ const passport = require('passport')
 
 
 // Serving our static files within the public folder
-const parentDir = path.resolve(path.dirname(__filename), '..')
+const parentDir = path.resolve(path.dirname(__filename), '.')
 const publicPath = path.join(parentDir, 'public')
 
 // * to Dynacmically update content in our page
@@ -98,12 +98,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Tell the app to use the router
-const router = require('./routes');
+const router = require('./src/routes');
 
 app.use(router)
 
 // Configure the passport strategies 
-const { passportConfig } = require('./utils/passport')
+const { passportConfig } = require('./src/utils/passport')
 
 passportConfig()
 
@@ -127,6 +127,6 @@ hbs.localsAsTemplateData(app)
 
 /***************************************** */
 
-// app.listen(process.env.PORT, (err) => {
-//     console.log(`Listening on port ${process.env.PORT}`)
-// })
+app.listen(process.env.PORT, (err) => {
+    console.log(`Listening on port ${process.env.PORT}`)
+})
