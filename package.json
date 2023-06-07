@@ -29,7 +29,6 @@
     "express-pjax": "0.0.1",
     "express-session": "^1.17.3",
     "hbs": "^4.2.0",
-    "helmet": "^7.0.0",
     "jquery-pjax": "^2.0.1",
     "livereload": "^0.9.3",
     "mysql2": "^2.3.3",

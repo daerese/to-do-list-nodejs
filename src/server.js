@@ -26,7 +26,7 @@ const dotenv = require('dotenv').config()
 
 // * Helmet offers protection from web vulnerabilites
 // * by setting HTTP headers appropiately.
-const helmet = require('helmet')
+// const helmet = require('helmet')
 
 const livereload = require('livereload')
 const connectLivereload = require('connect-livereload')
@@ -109,7 +109,7 @@ passportConfig()
 
 
 // * Setting up helmet and other security options
-app.use(helmet())
+// app.use(helmet())
 
 app.disable('x-powered-by')
 
